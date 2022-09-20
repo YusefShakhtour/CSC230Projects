@@ -7,51 +7,43 @@
  *
  */
 static long parseExpression() {
-    char val = '0';
-    char valc = '0';
-    long val1 = 0;
-    long val2 = 0;
-    scanf("%c", &val);
-    if (val == '+' || val == '~' || val == '/' || val == '*') {
-        scanf("%c", &valc);
-        if (valc == '+' || valc == '~' || valc == '/' || valc == '*') {
-            
-        }
-        else {
-            ungetc(valc, stdin);
-            val1 = readNumber();
-            val2 = readNumber();
-            if (val == '+') {
-                checkAdd(val1, val2);
-                return val1 + val2;
-            }
-            else if (val == '~') {
-                checkSub(val1, val2);
-                return val1 - val2;
-            } 
-            else if (val == '*') {
-                checkMul(val1,val2);
-                return val1 * val2;
-            }
-            else if (val == '/') {
-                checkDiv(val1, val2);
-                return val1 / val2;
-            }
-        }
+
+    long a = 0;
+    long b = 0;
+    long c = getchar();
+    while (c == ' ') {
+        c = getchar();
+    }
+    if (c == '+') {
+        a = parseExpression();
+        b = parseExpression();
+        checkAdd(a, b);
+
+        return a + b;
+    }
+    else if (c == '~') {
+        a = parseExpression();
+        b = parseExpression();
+        checkSub(a, b);
+        return a - b;
+    }
+    else if (c == '*') {
+        a = parseExpression();
+        b = parseExpression();
+        checkMul(a, b);
+
+        return a * b;
+    }
+    else if (c == '/') {
+        a = parseExpression();
+        b = parseExpression();
+        checkDiv(a, b);
+        return a / b;
     }
     else {
-        ungetc(val, stdin);
-        val1 = readNumber();
-        scanf("%c", &val);
-        if (val == '+' || val == '~' || val == '/' || val == '*') {
-            parseExpression();
-        }
-        else {
-            ungetc(val, stdin);
-            val2 = readNumber();
-        }
-    } 
-    return 20;
+        ungetc(c, stdin);
+        return readNumber();
+    }
 }
 
 /**
@@ -59,8 +51,23 @@ static long parseExpression() {
  */
 int main() {
 
-   printNumber(parseExpression());
+    long c = getchar();
 
+    while (c != EOF) {
+        while (c == ' ' || c == '\n') {
+            c = getchar();
+        }
+        if (c == EOF) { 
+            printf("\n"); 
+            break;
+        }
+
+        ungetc(c, stdin);
+        c = parseExpression();
+        printNumber(c);
+        c = getchar();
+    }
+    return EXIT_SUCCESS;
 }
 
 
