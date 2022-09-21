@@ -4,14 +4,17 @@
 #include "bounds.h"
 
 /*
- *
+ * parseExpression is a recursive fucntion that will look through stdin and 
+ * parse the polish notation into values and operators that can be used by other 
+ * functions in the program. It will then compute the result of the expression
+ * @return long the value of the computation
  */
 static long parseExpression() {
 
     long a = 0;
     long b = 0;
     long c = getchar();
-    while (c == ' ') {
+    while (c == ' ' || c == '\n') {
         c = getchar();
     }
     if (c == '+') {
@@ -57,8 +60,7 @@ int main() {
         while (c == ' ' || c == '\n') {
             c = getchar();
         }
-        if (c == EOF) { 
-            printf("\n"); 
+        if (c == EOF) {
             break;
         }
 
