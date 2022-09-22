@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <limits.h>
-#define OVERFLOW_ERROR 100
-#define DIV_ZERO_ERR 101
+#include "bounds.h"
 
 /**
  * Absolute is a helper method that will calculate the absolute value of 

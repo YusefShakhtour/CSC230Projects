@@ -67,6 +67,7 @@ int main() {
         ungetc(c, stdin);
         c = parseExpression();
         printNumber(c);
+        printf("\n");
         c = getchar();
     }
     return EXIT_SUCCESS;

@@ -3,9 +3,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-
-/***/
-#define INVALID_INPUT 102
+#include "base.h"
 
 /**
  * readNumber will read in the value of the digit from stdin and make sure it is valid
@@ -16,7 +14,7 @@ long readNumber() {
     long val  = 0;
     int valid = scanf("%ld", &val);
     if (valid < 1) { 
-        exit(INVALID_INPUT);
+        exit(FAIL_INPUT);
     }
     return val;
 }
@@ -27,5 +25,5 @@ long readNumber() {
  * @param val the value to print
  */
 void printNumber(long val) {
-    printf("%ld\n", val);
+    printf("%ld", val);
 }
