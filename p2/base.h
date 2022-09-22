@@ -1,5 +1,9 @@
 /**
-  */
+ * @file base.h
+ * @author GIVEN FILE
+ * This header file defines the exit statuses and functions that will 
+ * be used in both base10 and base32 files as well as polish.c.
+*/
 
 /** Exit status indicating that the program was given invalid input. */
 #define FAIL_INPUT 102

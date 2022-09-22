@@ -1,5 +1,9 @@
 /**
- *
+ * @file bounds.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This file is defining the functions that were prototypes in bounds.h
+ * The purpose of this file is to determine if certain operations cause overflow or other errors
+ * and it will be used in base32.c and base10.c
  */
 
 #include <stdio.h>
@@ -14,7 +18,7 @@
  * @return long the absolute value of that parameter
  */
 
-long absolute(long a) { 
+static long absolute(long a) { 
     if (a < 0) {
         return a * (-1);
     }
@@ -23,11 +27,6 @@ long absolute(long a) {
     }
 }
 
-/**
- * checkAdd will ensure that a given addition computation will not cause overflow
- * @param a one of the operands of the expression
- * @param b one of the operands of the expression
- */
 void checkAdd(long a, long b) {
     if (a > 0 && b > 0) { 
         if (a + b < 0) { 
@@ -42,11 +41,7 @@ void checkAdd(long a, long b) {
     }
 }
 
-/**
- * checkSub will ensure that a given subtraction computation will not cause overflow
- * @param a one of the operands of the expression
- * @param b one of the operands of the expression
- */
+
 void checkSub(long a, long b) {
     if (a < 0 && b > 0) { 
         if (a - b > 0) {
@@ -61,11 +56,7 @@ void checkSub(long a, long b) {
 
 }
 
-/**
- * checkMul will ensure that a given multiplication computation will not cause overflow
- * @param a one of the operands of the expression
- * @param b one of the operands of the expression
- */
+
 void checkMul(long a, long b) {
     if (a > 0 && b > 0) {
         if (a > (LONG_MAX / b)) {
@@ -79,11 +70,6 @@ void checkMul(long a, long b) {
     }
 }
 
-/**
- * checkDiv will ensure that the given division operation will not cause a divide by 0 error
- * @param a one of the operands of the expression
- * @param b one of the operands of the expression
- */
 void checkDiv(long a, long b) {
     if (b == 0) {
         exit(DIV_ZERO_ERR);

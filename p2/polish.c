@@ -1,3 +1,11 @@
+/**
+ * @file polish.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This file is responsible for holding our main function and parseExpression
+ * which will parse through standard input computing the given operations. 
+ * Uses functions from base.h and bounds.h to readNumbers and check for overflow
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "base.h"
@@ -43,14 +51,17 @@ static long parseExpression() {
         checkDiv(a, b);
         return a / b;
     }
-    else {
+    else { //Otherwise, we have a value, put char back on stream, read the value
         ungetc(c, stdin);
         return readNumber();
     }
 }
 
 /**
- *
+ * Program starting point, reads characters from stdin 
+ * until end of file, skipping white spaces and newlines
+ * calls functions as needed
+ * @return program exit status
  */
 int main() {
 
@@ -63,11 +74,10 @@ int main() {
         if (c == EOF) {
             break;
         }
-
         ungetc(c, stdin);
         c = parseExpression();
         printNumber(c);
-        printf("\n");
+        printf("\n"); //After printing, print new line
         c = getchar();
     }
     return EXIT_SUCCESS;

@@ -1,15 +1,14 @@
 /**
- *
+ * @file base10.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This file will be used in the base10 version of the program where the main function
+ * of the file is to read/convert numbers passed in and print those numbers out
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include "base.h"
 
-/**
- * readNumber will read in the value of the digit from stdin and make sure it is valid
- * if it is valid, it will return the read valie
- * @return long the read value from standard input
- */
+
 long readNumber() {
     long val  = 0;
     int valid = scanf("%ld", &val);
@@ -19,11 +18,7 @@ long readNumber() {
     return val;
 }
 
-/**
- * printNumber will simply prtint the value of the given parameter
- * in the proper format.
- * @param val the value to print
- */
+
 void printNumber(long val) {
     printf("%ld", val);
 }
