@@ -17,19 +17,20 @@ bool wordChar(int ch) {
 
 }
 
-int expansionBound(char *sec, int maxRep) {
-  int totalCount; 
-  int charCount;
+
+int expansionBound(char *src, int maxRep) {
+  int totalCount = 0; 
+  int charCount = 0;
   int pointer = 0;
 
-  while (sec[pointer] != EOF) {
-    if (wordChar(sec[pointer])) { 
+  while (src[pointer] != '\0') {
+    if (wordChar(src[pointer])) { 
       totalCount++;
       charCount++;
       pointer++;
     }
     else {
-        totalCount++; 
+        totalCount++;
       if (charCount != 0 && charCount <= maxRep) { 
         totalCount += maxRep - charCount;
       }
@@ -40,31 +41,77 @@ int expansionBound(char *sec, int maxRep) {
   return totalCount; 
 }
 
+
 void expand(char *src, char *dest, char *tList[], char *rList[], int pairs) {
+  dest[0] = '\0';
+  char temp[strlen(dest)];
 
-  int maxRep = 0;
-  for (int k = 0; k < sizeof(rList) / sizeof(rList[0]); k++) { 
-    if (strlen(rList[k]) > maxRep) {
-      maxRep = strlen(rList[k]);
-    }
-  }
-  char final[expansionBound(src, maxRep)]; 	 //Use this array to store the new, replaced line and then copy it to dest when done. 
-  char temp[100];    				 //"Holding" char array with 100 char buffer that is being used to compare the strings in tList.
-  for (int i = 0; i < sizeof(src) / sizeof(char); i++) {
-    
-    while (wordChar(src[i])) { 
-      temp[i] = src[i];
-    }
-    for (int j = 0; j < pairs; j++) {
-      if (strcmp(temp, rList[i]) == 0) { 
+  for (int i = 0; i < strlen(src); i++) {
+    if (wordChar(src[i])) {
+      int count1 = 0;
+      while (wordChar(src[i])) {
+        temp[count1] = src[i];
+        i++;
+        count1++;
+      }
+      temp[count1] = '\0';
+      i--;
+      
+      for (int k = 0; k < pairs; k++) {
+        if (strcmp(tList[k], temp) == 0) {
+          strcpy(temp, rList[k]);
+        }
+      }
 
-        //Should do the replacement here.
-        strcpy(temp, rList[i]);
+      int len = strlen(dest);
+      int count = 0;
+      for (int j = len; j <= len + strlen(temp); j++) {  //Problem with handling non-word chars. Always gives garbage, might be going out of bounds.
+        dest[j] = temp[count];
+        count++;
       }
     }
+    
+    else {                                              //ISSUE**** If we have a non-word char followed by \n, how to handle?
+      int count2 = 0;                                   //ISSUE**** If we have a null-terminator, this needs to be handled to exit the loop 
+      while (!(wordChar(src[i]))) {
+        if (temp[count2] == '\0') {
+          break;
+        }
+        temp[count2] = src[i];
+        i++;
+        count2++;
+      }
+      temp[count2] = '\0';
+      i--;
 
-    for (int i = strlen(final); i < strlen(temp); i++) {  //Now whatever is in temp needs to be copied over into destination, in this case to final
-      final[i] = temp[i];
+      int len1 = strlen(dest);
+      int count4 = 0;
+      for (int j = len1; j < len1 + strlen(temp); j++) {
+        dest[j] = temp[count4];
+        if (temp[count4] == '\n') {
+          dest[j + 1] = '\0';
+          goto end;
+        }
+        count4++;
+      }
     }
   }
+  end:;
 }
+
+//int main() {
+//  char src[] = "Testing this string to see if it works";
+//  int size = expansionBound(src, 4);
+//  printf("%d\n", size);
+//  char dest[size];
+////  char dest[45];                         //Hard coding the 45 into dest allows expand to work perfectly, However, when I leave it to the variable size, 
+//                                           //which is still the correct integer value, for whatever reason there are discrepencies in my destination string  
+//  char *tList[] = {"this", "see"};
+//  char *rList[] = {"with" , "be"};
+//
+//  expand(src, dest, tList, rList, 2); 
+//  FILE *t = fopen("myFile.txt", "w");
+//  fprintf(t, "%s", dest);
+//  return 0;
+//  
+//}

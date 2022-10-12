@@ -5,9 +5,8 @@
 
 
 int measureLine(FILE *fp) {
-//  *fp = fopen(fp, "r");
   char ch;
-  fscanf(fp, "%c", &ch);
+  ch = fgetc(fp);
   int count = 0;
   if (ch == '\n') {
     count++;                //Newline is first char case.
@@ -17,7 +16,7 @@ int measureLine(FILE *fp) {
       break;                //No more input case, dont add to count
     } 
     count++;
-    fscanf(fp, "%c", &ch);
+    ch = fgetc(fp);
     if (ch == '\n') {
       count++;             //If at newLine char case
     }
@@ -27,13 +26,14 @@ int measureLine(FILE *fp) {
 }
 
 
-void readLine(FILE *fp, char str[]) {
-  int len = sizeof(str) / sizeof(char);
+void readLine(FILE *fp, char str[]) {   //Needs to be char by char, right now its by string that is wrong bc measureLine goes char by char.
+  int len = measureLine(fp);
   char ch;
   for (int i = 0; i < len; i++) {
-    fscanf(fp, "%c", &ch);
+    ch = fgetc(fp);
     str[i] = ch;
   }
+  str[len] = '\0';
   
 //  printf("%c\n", str[0]);
 }
