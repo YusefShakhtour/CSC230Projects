@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   FILE *in = fopen(argv[argc - 2], "r");
   FILE *out = fopen(argv[argc - 1], "w");
 
-  int l = measureLine(in);
+
 
   if (!in || !out) {
     //print to stdError
@@ -32,9 +32,7 @@ int main(int argc, char *argv[]) {
   int pairs = (argc - 3) / 2;
   char *tList[pairs];
   char *rList[pairs];
-  if (argc > 3) { 
-    pairs = (argc - 3) / 2;
-  }
+
 
   int c1 = 0;
   for (int i = 1; i <= pairs * 2; i = i + 2) { 	//Populating tList with target strings
@@ -57,12 +55,11 @@ int main(int argc, char *argv[]) {
     }
   }                                             //getting maxRep
   
-  
 //  int c = 0;
   int destSize = 0;  
   while (measureLine(in) != 0) {
     int lineSize = measureLine(in);
-    printf("%d\n", lineSize);
+//    printf("%d\n", lineSize);
     char str[lineSize + 1];
     str[0] = '\0';
     readLine(in, str);

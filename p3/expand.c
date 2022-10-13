@@ -44,7 +44,8 @@ int expansionBound(char *src, int maxRep) {
 
 void expand(char *src, char *dest, char *tList[], char *rList[], int pairs) {
   dest[0] = '\0';
-  char temp[strlen(dest)];
+  char temp[sizeof(dest)];
+//  int cond = pairs;
 
   for (int i = 0; i < strlen(src); i++) {
     if (wordChar(src[i])) {
@@ -57,6 +58,7 @@ void expand(char *src, char *dest, char *tList[], char *rList[], int pairs) {
       temp[count1] = '\0';
       i--;
       
+
       for (int k = 0; k < pairs; k++) {
         if (strcmp(tList[k], temp) == 0) {
           strcpy(temp, rList[k]);
@@ -74,7 +76,8 @@ void expand(char *src, char *dest, char *tList[], char *rList[], int pairs) {
     else {                                              //ISSUE**** If we have a non-word char followed by \n, how to handle?
       int count2 = 0;                                   //ISSUE**** If we have a null-terminator, this needs to be handled to exit the loop 
       while (!(wordChar(src[i]))) {
-        if (temp[count2] == '\0') {
+        if (src[i] == '\0') {                       //HAVE TO STOP AT NULL TERMINATOR THINK OF IT AS END OF SRC CASE
+    //      count2++;
           break;
         }
         temp[count2] = src[i];
@@ -88,12 +91,16 @@ void expand(char *src, char *dest, char *tList[], char *rList[], int pairs) {
       int count4 = 0;
       for (int j = len1; j < len1 + strlen(temp); j++) {
         dest[j] = temp[count4];
+        if (temp[count4] == '\0') {
+          break;
+        }
         if (temp[count4] == '\n') {
           dest[j + 1] = '\0';
           goto end;
         }
         count4++;
       }
+    dest[len1 + strlen(temp)] = '\0';
     }
   }
   end:;
