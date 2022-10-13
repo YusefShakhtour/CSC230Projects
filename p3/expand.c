@@ -1,4 +1,7 @@
-/**
+/**@file expand.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This .c file defines the functions that will be used to replace given target strings with replacement strings
+ * and store the new string in a separate variable to be used later
   */
 #include <string.h>
 #include "expand.h"
@@ -45,7 +48,7 @@ int expansionBound(char *src, int maxRep) {
 void expand(char *src, char *dest, char *tList[], char *rList[], int pairs) {
   dest[0] = '\0';
   char temp[sizeof(dest)];
-//  int cond = pairs;
+  temp[0] = '\0';
 
   for (int i = 0; i < strlen(src); i++) {
     if (wordChar(src[i])) {

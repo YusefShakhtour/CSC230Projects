@@ -1,20 +1,30 @@
-/**
+/**@file replace.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This .c file holds main where a majority of error checking will occur and 
+ * memory allocation so that other functions will not go out of bounds. 
   */
 
 #include "line.h"
 #include "expand.h"
 #include <string.h>
+#include <stdlib.h>
 
 /** Number of required arguments at the end of the command line. */
 #define REQUIRED_ARGS 2
 
 
 /**
- *
+ * The starting point of the program. It error checks and opens and closes necessary files
+ * It allocates the necessary amount of memory for various variables that need to be passed 
+ * into other functions. As well as retreives necessary command line arguments
+ * @param argc the number of elements in argv
+ * @param argv the various strings that were passed to the command line
+ * @return program exit status
  */
 int main(int argc, char *argv[]) { 
   if (argc < REQUIRED_ARGS + 1) { 
-    //print to stdError
+    fprintf(stderr, "usage: repalce (<target> <replacement>) * <input-file> <output-file>");
+    exit(EXIT_FAILURE);
   }
   else if ((argc % 2) != 1) {
     //print to stdError
@@ -25,8 +35,14 @@ int main(int argc, char *argv[]) {
 
 
 
-  if (!in || !out) {
-    //print to stdError
+  if (in == NULL) {
+    fprintf(stderr, "Can't open file: %s\n", argv[argc - 2]);
+    exit(EXIT_FAILURE);
+  }
+
+  if (out == NULL) {
+    fprintf(stderr, "Can't open file: %s\n", argv[argc - 1]);
+    exit(EXIT_FAILURE);
   }
 
   int pairs = (argc - 3) / 2;
@@ -41,11 +57,28 @@ int main(int argc, char *argv[]) {
     c1++;
   }
 
+  for (int i = 0; i < pairs; i++) {
+    for (int j = i + 1; j < pairs - i; j++) {
+      if (strcmp(tList[i], tList[j]) == 0) {
+        fprintf(stderr, "Duplicate target: %s\n", tList[i]);
+        exit(EXIT_FAILURE);
+      }
+    }
+  }
+
   int c2 = 0;
   for (int j = 2; j <= pairs * 2; j = j + 2) {              //Populating rList with replacement strings
-//      strcpy(rList[c2], argv[j]);
     rList[c2] = argv[j];
     c2++;
+  }
+
+  for (int i = 0; i < pairs; i++) {
+    for (int j = 0; j < strlen(rList[i]); j++) { 
+      if (!(wordChar(rList[i][j]))) { 
+        fprintf(stderr, "Invalid word: %s\n", rList[i]);
+        exit(EXIT_FAILURE);
+      }
+    }
   }
 
   int maxRep = 0;
@@ -71,7 +104,5 @@ int main(int argc, char *argv[]) {
 //    c = c + 1;
   }
   
-
-
-
+  return EXIT_SUCCESS;
 }

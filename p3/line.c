@@ -1,4 +1,7 @@
-/**
+/**@file line.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This .c file defines the functions that will be used to read and measure lines in order to properly
+ * allocate the necessary memory space for variables
   */
 
 #include "line.h"
