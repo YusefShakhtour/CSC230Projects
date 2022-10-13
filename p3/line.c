@@ -29,7 +29,7 @@ int measureLine(FILE *fp) {
 }
 
 
-void readLine(FILE *fp, char str[]) {   //Needs to be char by char, right now its by string that is wrong bc measureLine goes char by char.
+void readLine(FILE *fp, char str[]) {
   int len = measureLine(fp);
   char ch;
   for (int i = 0; i < len; i++) {
@@ -37,7 +37,5 @@ void readLine(FILE *fp, char str[]) {   //Needs to be char by char, right now it
     str[i] = ch;
   }
   str[len] = '\0';
-  
-//  printf("%c\n", str[0]);
 }
 

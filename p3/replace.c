@@ -26,9 +26,6 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "usage: repalce (<target> <replacement>) * <input-file> <output-file>");
     exit(EXIT_FAILURE);
   }
-  else if ((argc % 2) != 1) {
-    //print to stdError
-  }
 
   FILE *in = fopen(argv[argc - 2], "r");
   FILE *out = fopen(argv[argc - 1], "w");
@@ -52,7 +49,6 @@ int main(int argc, char *argv[]) {
 
   int c1 = 0;
   for (int i = 1; i <= pairs * 2; i = i + 2) { 	//Populating tList with target strings
-     // Just point to start of each string from argv
     tList[c1] = argv[i];
     c1++;
   }
@@ -88,11 +84,9 @@ int main(int argc, char *argv[]) {
     }
   }                                             //getting maxRep
   
-//  int c = 0;
   int destSize = 0;  
   while (measureLine(in) != 0) {
     int lineSize = measureLine(in);
-//    printf("%d\n", lineSize);
     char str[lineSize + 1];
     str[0] = '\0';
     readLine(in, str);
@@ -101,7 +95,7 @@ int main(int argc, char *argv[]) {
     dest[0] = '\0';
     expand(str, dest, tList, rList, pairs);
     fprintf(out, "%s", dest);
-//    c = c + 1;
+
   }
   
   return EXIT_SUCCESS;
