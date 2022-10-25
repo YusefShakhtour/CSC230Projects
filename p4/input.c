@@ -8,6 +8,9 @@
 char *readLine(FILE *fp) {    //TESTED SHOULD BE GOOD
   int len = 0;
   char ch = fgetc(fp);
+  if (ch == EOF) {
+    return '\0';
+  }
   while (ch != EOF) {
     if (ch == '\n') {
       len++;
