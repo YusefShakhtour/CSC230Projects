@@ -1,0 +1,8 @@
+/**
+ *
+ */
+
+/**
+ *
+ */
+char *readLine(FILE *fp);
