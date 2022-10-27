@@ -212,14 +212,11 @@ void listOrderItems(Order *order, int (*compare)(void const *va, void const *vb)
 int main(int argc, char *argv[]) 
 {
 
-//  printf("%s\n", argv[1]);
   Menu *menu;
   menu = makeMenu();
   Order *order;
   order = makeOrder();
-//  readMenuItems(argv[1], menu);
-//  listMenuItems(menu, compare, trueTest, "\0");
-//  readMenuItems(argv[1], menu);
+
   if (argc <= 1) {
     fprintf(stderr, "usage: kiosk <menu-file>*\n");
     exit(EXIT_FAILURE);
@@ -227,26 +224,25 @@ int main(int argc, char *argv[])
   for (int i = 1; i < argc; i++) {
     readMenuItems(argv[i], menu);
   }
-//  listMenuItems(menu, compare, trueTest, "\0");
 
-  char command[100]; //= (char *)malloc(100);   //HERE
+  char *command = (char *)malloc(100);   //HERE
   command[0] = '\0';
   char temp[100];
-  while (strcmp(command, "quit") != 0) {
-
+  while ((command = readLine(stdin)) != NULL) {
     printf("%s", "cmd> ");
-    scanf("%[^\n]%*c", command);  //Remove %*c
-
     printf("%s\n", command);
     sscanf(command, "%s", temp);
 
-    if ((strcmp(command, "list menu") == 0) || (strcmp(command, "list menu ") == 0)) {
+    if ((strcmp(command, "list menu") == 0) || (strcmp(command, "list menu ") == 0)) {   //Fix to detect whitespace probably need sscanf
       listMenuItems(menu, compare, trueTest, "\0");
       printf("\n");
     }
     else if ((strcmp(command, "list order") == 0) || (strcmp(command, "list order ") == 0)) {
       listOrderItems(order, orderCompare);
       printf("\n");
+    }
+    else if (strcmp(command, "quit") == 0) {
+      goto nExit;
     }
     else if (strcmp(temp, "add") == 0) {
       char id[5];
@@ -266,40 +262,12 @@ int main(int argc, char *argv[])
       char cat[16];
       sscanf(command, "%*s%*s%s", cat); 
       listMenuItems(menu, compare, testCat, cat);
-      printf("\n");
-      
+      printf("\n"); 
     }
- //   else {
- //     printf("%s\n", "Invalid command");
- //   }
-  //  strcpy(command, readLine(stdin));
-  //  sscanf(command, "%s%*c", command);
-//  scanf("%[^\n]%*c", command);  //Remove %*c
-}
-
-
-//  readMenuItems("menu-c.txt", menu);
-//  readMenuItems("menu-b.txt", menu);
-//  char temp[10] = "\0";
-  
-//  if (temp[0] == '\0') {
-//    listMenuItems(menu, compare, trueTest, temp);
-//  }
-//  else {
-//    listMenuItems(menu, compare, testCat, temp);
-//  }
-  
-//  char *id = "7800";
-//  char *id2 = "9087";
-//  Order *order;
-//  order = makeOrder();
-//  addOrder(order, menu, id, 3);
-//  addOrder(order, menu, id2, 2);
-//  listOrderItems(order, compare);
-//  removeOrder(order, id, 2);
-//  listOrderItems(order, compare);
-//  removeOrder(order, id2, 2);
-//  listOrderItems(order, compare);
+  }
+  printf("%s", "cmd> ");
+    
+  nExit:;
   free(menu);
   free(order);
 

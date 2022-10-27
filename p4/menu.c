@@ -31,16 +31,13 @@ void readMenuItems(char const *filename, Menu *menu) {
     fprintf(stderr, "%s%s\n","Can't open file: ", filename);
     exit(EXIT_FAILURE);
   }
-  FILE *fp1 = fopen(filename, "r");
+ 
+  FILE *fp1 = fopen(filename, "r"); 
   int lines = 0;
-  char ch = fgetc(fp1);
-  while (ch != EOF) {
-    if (ch == '\n') {
-      lines++;
-    }
-    ch = fgetc(fp1);
+  while (readLine(fp1) != NULL) {
+    lines++;
   }
-  fclose(fp1);
+  
 
   char *str = readLine(fp);
   char category[16];
@@ -60,10 +57,6 @@ void readMenuItems(char const *filename, Menu *menu) {
       fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
       exit(EXIT_FAILURE);
     }
-//    if ((strcmp(id, "NULL") == 0) || (strcmp(category, "NULL") == 0) || (strcmp(name, "NULL") == 0) || (cost == -1)) {
-//      fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
-//      exit(EXIT_FAILURE); 
-//    }
    
     if (strlen(id) != 4) {
       fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
@@ -73,7 +66,11 @@ void readMenuItems(char const *filename, Menu *menu) {
       fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
       exit(EXIT_FAILURE);
     } 
-    if (strlen(name) > sizeof(menu->list[count]->name)) {
+    if ((strlen(name)) > (sizeof(menu->list[count]->name))) {
+//      printf("%s\n", str);
+//      int size = sizeof(menu->list[count]->name);
+//      int len = strlen(name);
+//      printf("%d %d %s",len, size, name);
       fprintf(stderr, "%s%s\n", "Invalid menu file: ", filename);
       exit(EXIT_FAILURE);
     }
@@ -83,12 +80,14 @@ void readMenuItems(char const *filename, Menu *menu) {
     strcpy(menu->list[count]->category, category);
     menu->list[count]->cost = cost;
 
+    //free(str);        //Causes errors
     str = readLine(fp);
     menu->count = menu->count + 1; 
     count++;
   }
   fclose(fp);
-  for (int i = 0; i < menu->count; i++) {
+
+  for (int i = 0; i < menu->count; i++) {  //Dupe ID check
     for (int j = i + 1; j < menu->count - 1; j++) {
       if (strcmp(menu->list[i]->id, menu->list[j]->id) == 0) {
         fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
