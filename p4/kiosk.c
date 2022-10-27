@@ -113,7 +113,7 @@ static bool testCat(MenuItem const *item, char const *str) {
  * @param quantity the quantity ordered
  */
 void addOrder(Order *order, Menu *menu, char *id, int quantity) {  //WORKING
-  MenuItem *cpy;
+  MenuItem *cpy; //Unneccesary middleman
 
   for (int i = 0; i < menu->count; i++) {
     if (strcmp(menu->list[i]->id, id) == 0) {  //Loop through menu to find desired item
@@ -158,6 +158,17 @@ void removeOrder(Order *order, char *id, int quantity) {  //WORKING
       }
     }
   } 
+}
+
+/**
+ *
+ */
+void freeOrder(Order *order) {
+  for (int i = 0; i < order->count; i++) {
+    free(order->list[i]);
+  }
+  free(order->list);
+  free(order);
 }
 
 /**
@@ -218,34 +229,25 @@ int main(int argc, char *argv[])
   }
 //  listMenuItems(menu, compare, trueTest, "\0");
 
-  char *command = (char *)malloc(100);
+  char command[100]; //= (char *)malloc(100);   //HERE
   command[0] = '\0';
-//  int offset;
-//  printf("%s", "cmd> ");
-//    scanf("%[^\n]%*c", command);
-//  strcpy(command, readLine(stdin));  //char command [100] = "\0"
   char temp[100];
   while (strcmp(command, "quit") != 0) {
- // while (strcmp(command, "NULL") != 0) {
+
     printf("%s", "cmd> ");
     scanf("%[^\n]%*c", command);  //Remove %*c
 
- //   offset;
     printf("%s\n", command);
     sscanf(command, "%s", temp);
-//    fseek(stdin, -1 * offset, SEEK_CUR);
-//    printf("%s%d", "Offset ", offset);
-    if (strcmp(command, "list menu") == 0) {
+
+    if ((strcmp(command, "list menu") == 0) || (strcmp(command, "list menu ") == 0)) {
       listMenuItems(menu, compare, trueTest, "\0");
       printf("\n");
     }
-    else if (strcmp(command, "list order") == 0) {
+    else if ((strcmp(command, "list order") == 0) || (strcmp(command, "list order ") == 0)) {
       listOrderItems(order, orderCompare);
       printf("\n");
     }
-//    else if (strcmp(readLine(stdin), "NULL") == 0) {
-//      break;
-//    }
     else if (strcmp(temp, "add") == 0) {
       char id[5];
       int quantity;
@@ -260,11 +262,12 @@ int main(int argc, char *argv[])
       removeOrder(order, id, quantity);
       printf("\n");
     }
-    else if (strcmp(temp, "list") == 0) {  //if next string after list is menu, then invalid command
+    else if (strcmp(temp, "list") == 0) {  //if next string after list is menu, then invalid command  
       char cat[16];
       sscanf(command, "%*s%*s%s", cat); 
       listMenuItems(menu, compare, testCat, cat);
       printf("\n");
+      
     }
  //   else {
  //     printf("%s\n", "Invalid command");
@@ -298,6 +301,7 @@ int main(int argc, char *argv[])
 //  removeOrder(order, id2, 2);
 //  listOrderItems(order, compare);
   free(menu);
+  free(order);
 
   return EXIT_SUCCESS;
 }

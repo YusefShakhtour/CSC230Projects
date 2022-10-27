@@ -21,6 +21,7 @@ void freeMenu(Menu *menu) {
   for (int i = 0; i < menu->count; i++) {
     free(menu->list[i]);
   }
+  free(menu->list);
   free(menu);
 }
 
@@ -38,8 +39,6 @@ void readMenuItems(char const *filename, Menu *menu) {
       lines++;
     }
     ch = fgetc(fp1);
- //   if (ch == EOF) {
- //   }
   }
   fclose(fp1);
 
@@ -89,6 +88,14 @@ void readMenuItems(char const *filename, Menu *menu) {
     count++;
   }
   fclose(fp);
+  for (int i = 0; i < menu->count; i++) {
+    for (int j = i + 1; j < menu->count - 1; j++) {
+      if (strcmp(menu->list[i]->id, menu->list[j]->id) == 0) {
+        fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
+        exit(EXIT_FAILURE);
+      }
+    }
+  }
 }
 
 
