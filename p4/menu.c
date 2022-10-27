@@ -18,11 +18,18 @@ Menu *makeMenu() {
 }
 
 void freeMenu(Menu *menu) {
-
+  for (int i = 0; i < menu->count; i++) {
+    free(menu->list[i]);
+  }
+  free(menu);
 }
 
 void readMenuItems(char const *filename, Menu *menu) {
   FILE *fp = fopen(filename, "r");
+  if (fp == NULL) {
+    fprintf(stderr, "%s%s\n","Can't open file: ", filename);
+    exit(EXIT_FAILURE);
+  }
   FILE *fp1 = fopen(filename, "r");
   int lines = 0;
   char ch = fgetc(fp1);
@@ -31,9 +38,8 @@ void readMenuItems(char const *filename, Menu *menu) {
       lines++;
     }
     ch = fgetc(fp1);
-    if (ch == EOF) {
- //     lines++;
-    }
+ //   if (ch == EOF) {
+ //   }
   }
   fclose(fp1);
 
@@ -42,6 +48,7 @@ void readMenuItems(char const *filename, Menu *menu) {
   char id[5];
   char name[21];
   int cost;
+  lines = lines + menu->count;
   int count = menu->count;
   while (count < lines) {
     if (count >= menu->capacity) {
@@ -49,8 +56,28 @@ void readMenuItems(char const *filename, Menu *menu) {
       menu->list = (MenuItem **)realloc(menu->list, (menu->capacity) * sizeof(MenuItem *));
     }
     
-    sscanf(str, "%s%s%d%s", id, category, &cost, name);
-    
+    int matches = sscanf(str, "%s%s%d %[ -z]", id, category, &cost, name);
+    if (matches != 4) {
+      fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
+      exit(EXIT_FAILURE);
+    }
+//    if ((strcmp(id, "NULL") == 0) || (strcmp(category, "NULL") == 0) || (strcmp(name, "NULL") == 0) || (cost == -1)) {
+//      fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
+//      exit(EXIT_FAILURE); 
+//    }
+   
+    if (strlen(id) != 4) {
+      fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
+      exit(EXIT_FAILURE);
+    }
+    if (strlen(category) > sizeof(menu->list[count]->category)) {
+      fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
+      exit(EXIT_FAILURE);
+    } 
+    if (strlen(name) > sizeof(menu->list[count]->name)) {
+      fprintf(stderr, "%s%s\n", "Invalid menu file: ", filename);
+      exit(EXIT_FAILURE);
+    }
     menu->list[count] = (MenuItem *)malloc(sizeof(MenuItem));
     strcpy(menu->list[count]->id, id);
     strcpy(menu->list[count]->name, name);
@@ -61,16 +88,17 @@ void readMenuItems(char const *filename, Menu *menu) {
     menu->count = menu->count + 1; 
     count++;
   }
+  fclose(fp);
 }
 
 
 void listMenuItems(Menu *menu, int (*compare)( void const *va, void const *vb ), bool (*test)( MenuItem const *item, char const *str ), char const *str) {
   qsort(menu->list, menu->count, sizeof(menu->list[0]), compare);
-  printf("%-7s%-21s%-12s%12s\n", "ID", "Name", "Category", "Cost");
+  printf("%-5s%-21s%-8s%12s\n", "ID", "Name", "Category", "Cost");
   for (int i = 0; i < menu->count; i++) {
     if (test(menu->list[i], str)) {
       double price = (double)(menu->list[i]->cost) / 100;
-      printf("%-7s%-21s%-12s%9c%6.2f\n", menu->list[i]->id, menu->list[i]->name, menu->list[i]->category, '$' , price);
+      printf("%-4s %-20s %-15s %c %5.2f\n", menu->list[i]->id, menu->list[i]->name, menu->list[i]->category, '$' , price);
     }
   }
 }

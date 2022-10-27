@@ -52,8 +52,8 @@ if [ -x kiosk ] ; then
     args=(menu-a.txt)
     runTest 01 0
     
-    args=(menu-b.txt)
-    runTest 02 0
+#    args=(menu-b.txt)
+#    runTest 02 0
     
     args=(menu-b.txt menu-a.txt)
     runTest 03 0
