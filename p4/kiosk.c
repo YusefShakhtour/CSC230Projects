@@ -201,6 +201,27 @@ void listOrderItems(Order *order, int (*compare)(void const *va, void const *vb)
   printf("%-5s%47c%6.2f\n", "Total", '$', total);
 }
 
+/**
+ *
+ */
+bool menuCheck(Menu *menu, char *id) {
+  for (int i = 0; i < menu->count; i++) {
+    if (strcmp(menu->list[i]->id, id) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool orderCheck(Order *order, char *id) {
+  for (int i = 0; i < order->count; i++) {
+    if (strcmp(order->list[i]->m->id, id) == 0) {
+      return true;
+    }
+  }
+  return false;
+}
+
 
 /**
  * Program starting point where input is taken from stdin and depending on the command passed in 
@@ -232,42 +253,121 @@ int main(int argc, char *argv[])
     printf("%s", "cmd> ");
     printf("%s\n", command);
     sscanf(command, "%s", temp);
-
-    if ((strcmp(command, "list menu") == 0) || (strcmp(command, "list menu ") == 0)) {   //Fix to detect whitespace probably need sscanf
-      listMenuItems(menu, compare, trueTest, "\0");
-      printf("\n");
-    }
-    else if ((strcmp(command, "list order") == 0) || (strcmp(command, "list order ") == 0)) {
-      listOrderItems(order, orderCompare);
-      printf("\n");
-    }
-    else if (strcmp(command, "quit") == 0) {
-      goto nExit;
+    
+    if (strcmp(temp, "list") == 0) {
+      sscanf(command, "%*s%s", temp);
+      if (strcmp(temp, "menu") == 0) {
+        if (sscanf(command, "%*s%*s%s", temp) <= 0) {
+          listMenuItems(menu, compare, trueTest, "\0");
+          printf("\n");
+        }
+        else {
+          printf("Invalid command\n\n");
+        }
+      }
+      else if (strcmp(temp, "order") == 0) {
+        if (sscanf(command, "%*s%*s%s", temp) <= 0) {
+          listOrderItems(order, orderCompare);
+          printf("\n");
+        }
+        else {
+          printf("Invalid command\n\n");
+        }
+      }
+      else if (strcmp(temp, "category") == 0) {
+        char cat[16];
+        sscanf(command, "%*s%*s%s", cat);
+        if (sscanf(command, "%*s%*s%*s%s", temp) <= 0) {
+          listMenuItems(menu, compare, testCat, cat);
+          printf("\n");
+        }
+        else {
+          printf("Invalid command\n\n");
+        }
+      }
     }
     else if (strcmp(temp, "add") == 0) {
       char id[5];
       int quantity;
       sscanf(command, "%*s%s%d", id, &quantity);
-      addOrder(order, menu, id, quantity);
-      printf("\n");
+      if (menuCheck(menu, id) == true) {
+        if (sscanf(command, "%*s%*s%*d%s", temp) <= 0) {
+          addOrder(order, menu, id, quantity);
+          printf("\n");
+        }
+        else {
+          printf("Invalid command\n\n");
+        }
+      }
+      else {
+        printf("Invalid command\n\n");
+      }
     }
     else if (strcmp(temp, "remove") == 0) {
       char id[5];
       int quantity;
       sscanf(command, "%*s%s%d", id, &quantity);
-      removeOrder(order, id, quantity);
-      printf("\n");
+      if (orderCheck(order, id)) {
+        if (sscanf(command, "%*s%*s%*d%s", temp) <= 0) {
+          removeOrder(order, id, quantity);
+          printf("\n");
+        }
+        else {
+          printf("Invalid command\n\n");
+        }
+      }
+      else {
+        printf("Invalid command\n\n");
+      }
     }
-    else if (strcmp(temp, "list") == 0) {  //if next string after list is menu, then invalid command  
-      char cat[16];
-      sscanf(command, "%*s%*s%s", cat); 
-      listMenuItems(menu, compare, testCat, cat);
-      printf("\n"); 
+    else if (strcmp(temp, "quit") == 0) {
+      if (sscanf(command, "%*s%s", temp) <= 0) {
+        goto nExit;
+      }
+      else {
+        printf("Invalid command\n\n");
+      }
     }
-  }
-  printf("%s", "cmd> ");
+    else {
+      printf("Invalid command\n\n");
+    }
     
-  nExit:;
+//    if ((strcmp(command, "list menu") == 0) || (strcmp(command, "list menu ") == 0)) {   //Fix to detect whitespace probably need sscanf
+//      listMenuItems(menu, compare, trueTest, "\0");
+//      printf("\n");
+//    }
+//    else if ((strcmp(command, "list order") == 0) || (strcmp(command, "list order ") == 0)) {
+//     listOrderItems(order, orderCompare);
+//      printf("\n");
+//    }
+//    else if (strcmp(command, "quit") == 0) {
+//      goto nExit;
+//    }
+//    else if (strcmp(temp, "add") == 0) {
+//      char id[5];
+//      int quantity;
+//      sscanf(command, "%*s%s%d", id, &quantity);
+//      addOrder(order, menu, id, quantity);
+//      printf("\n");
+//    }
+//    else if (strcmp(temp, "remove") == 0) {
+//      char id[5];
+//      int quantity;
+//     sscanf(command, "%*s%s%d", id, &quantity);
+//     removeOrder(order, id, quantity);
+//      printf("\n");
+//    }
+//    else if (strcmp(temp, "list") == 0) {  //if next string after list is menu, then invalid command  
+//      char cat[16];
+//      sscanf(command, "%*s%*s%s", cat); 
+//      listMenuItems(menu, compare, testCat, cat);
+//      printf("\n"); 
+//    }
+  }
+  printf("%s", "cmd> ");    
+  nExit: {};
+
+  free(command);
   free(menu);
   free(order);
 

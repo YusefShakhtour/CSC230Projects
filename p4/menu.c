@@ -36,10 +36,9 @@ void readMenuItems(char const *filename, Menu *menu) {
   int lines = 0;
   while (readLine(fp1) != NULL) {
     lines++;
-  }
-  
+  } 
 
-  char *str = readLine(fp);
+//  char *str = readLine(fp);
   char category[16];
   char id[5];
   char name[21];
@@ -51,7 +50,7 @@ void readMenuItems(char const *filename, Menu *menu) {
       menu->capacity = (menu->capacity) * 2;
       menu->list = (MenuItem **)realloc(menu->list, (menu->capacity) * sizeof(MenuItem *));
     }
-    
+    char *str = readLine(fp);
     int matches = sscanf(str, "%s%s%d %[ -z]", id, category, &cost, name);
     if (matches != 4) {
       fprintf(stderr, "%s%s\n","Invalid menu file: ", filename);
@@ -67,10 +66,6 @@ void readMenuItems(char const *filename, Menu *menu) {
       exit(EXIT_FAILURE);
     } 
     if ((strlen(name)) > (sizeof(menu->list[count]->name))) {
-//      printf("%s\n", str);
-//      int size = sizeof(menu->list[count]->name);
-//      int len = strlen(name);
-//      printf("%d %d %s",len, size, name);
       fprintf(stderr, "%s%s\n", "Invalid menu file: ", filename);
       exit(EXIT_FAILURE);
     }
@@ -80,8 +75,8 @@ void readMenuItems(char const *filename, Menu *menu) {
     strcpy(menu->list[count]->category, category);
     menu->list[count]->cost = cost;
 
-    //free(str);        //Causes errors
-    str = readLine(fp);
+ //   free(str);        //Causes errors
+ //   str = readLine(fp);
     menu->count = menu->count + 1; 
     count++;
   }

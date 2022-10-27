@@ -26,6 +26,7 @@ char *readLine(FILE *fp) {    //TESTED SHOULD BE GOOD
     count++;
     ch = fgetc(fp);
   }
+  //  printf("%d %d\n", count, cap);
     str[count] = '\0';
 //  printf("%s%d","LENGHT", len);
 //Fomr here on is garbage
