@@ -3,7 +3,6 @@
  * This file defines much of what is needed to work with orders 
  * and allows orders and menus to communicate accordingly
  */
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,7 +12,8 @@
 
 
 /**
- * An OrderItem
+ * An OrderItem which contains the quantity of a particualr menuItem
+ * and the menuItem desired.
  */
 struct OrderItem {
   int quantity;
@@ -22,7 +22,8 @@ struct OrderItem {
 typedef struct OrderItem OrderItem;
 
 /**
- * An Order
+ * An Order which contains a list of orderItems
+ * a count of the order items and the capcity of order
  */
 struct Order {
   int count;
@@ -60,7 +61,11 @@ static int compare(void const *va, void const *vb) {
 
 
 /**
- *
+ * Compare function to compare order two order items to be 
+ * sorted based on cost of total items followed by id
+ * @param va pointer to an orderitem
+ * @param vb pointer to an orderitem
+ * @return int whether the comparison was greater, less, or equal;
  */
 static int orderCompare(void const *va, void const *vb) {
   OrderItem const *o1 = *(OrderItem **) va;
@@ -194,7 +199,6 @@ void listOrderItems(Order *order, int (*compare)(void const *va, void const *vb)
   qsort(order->list, order->count, sizeof(order->list[0]), compare);
   printf("%-5s%-21s%8s %-16s%3s\n", "ID", "Name", "Quantity", "Category", "Cost");
   for (int i = 0; i < order->count; i++) {
-//    double price = (double)(((order->list[i]->m->cost) / 100) * (order->list[i]->quantity));
     double price = ((double)((order->list[i]->m->cost) / 100.0)) * ((double) (order->list[i]->quantity));
     total += price;
     printf("%-5s%-21s%8d %-16s%c%6.2f\n", order->list[i]->m->id, order->list[i]->m->name, order->list[i]->quantity, order->list[i]->m->category, '$', price);

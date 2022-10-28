@@ -1,5 +1,8 @@
-/**
- *
+/**@file input.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This file defines the input.h functions and is used to 
+ * read input from a file stream and output that input line by line
+ * in a string.
  */
 #include <string.h>
 #include <stdio.h>

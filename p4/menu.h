@@ -6,7 +6,8 @@
 
 
 /**
- *
+ * A menuItem that contains and id, name,
+ * category, and cost which define menuItems
  */
 struct MenuItem {
   char id[5];
@@ -17,7 +18,8 @@ struct MenuItem {
 typedef struct MenuItem MenuItem;
 
 /**
- *
+ * A Menu that contains a list of menuItems
+ * a count and a capacity
  */
 struct Menu {
   MenuItem **list;

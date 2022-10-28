@@ -1,5 +1,7 @@
-/**
- *
+/**@file menu.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This file defines all functions from menu.h and is used to manipulate menus
+ * and menuItems by allocating storage for them and changing fields as needed. 
  */
 #include <string.h>
 #include <stdlib.h>
@@ -84,7 +86,7 @@ void readMenuItems(char const *filename, Menu *menu) {
     strcpy(menu->list[count]->category, category);
     menu->list[count]->cost = cost;
     
-//    free(str);
+
 //    str = readLine(fp);
     menu->count = menu->count + 1; 
     count++;
