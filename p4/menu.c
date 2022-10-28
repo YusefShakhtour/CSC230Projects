@@ -7,6 +7,7 @@
 #include <stdbool.h>
 #include "input.h"
 #include "menu.h"
+#include <assert.h>
 
 
 Menu *makeMenu() {
@@ -32,11 +33,16 @@ void readMenuItems(char const *filename, Menu *menu) {
     exit(EXIT_FAILURE);
   }
  
-  FILE *fp1 = fopen(filename, "r"); 
+  FILE *fp1 = fopen(filename, "r");
   int lines = 0;
-  while (readLine(fp1) != NULL) {
-    lines++;
-  } 
+  char ch = fgetc(fp1);
+  while (ch != EOF) {
+    if (ch == '\n') {
+      lines++;
+    }
+    ch = fgetc(fp1);
+  }
+  fclose(fp1); 
 
 //  char *str = readLine(fp);
   char category[16];
@@ -45,10 +51,13 @@ void readMenuItems(char const *filename, Menu *menu) {
   int cost;
   lines = lines + menu->count;
   int count = menu->count;
+  int cap = menu->capacity;
+//  char *str = (char *)malloc(100);
   while (count < lines) {
-    if (count >= menu->capacity) {
-      menu->capacity = (menu->capacity) * 2;
-      menu->list = (MenuItem **)realloc(menu->list, (menu->capacity) * sizeof(MenuItem *));
+    if (count >= cap) {
+      cap *= 2;
+      menu->list = (MenuItem **)realloc(menu->list, cap * sizeof(MenuItem *));
+      menu->capacity = cap;
     }
     char *str = readLine(fp);
     int matches = sscanf(str, "%s%s%d %[ -z]", id, category, &cost, name);
@@ -74,9 +83,9 @@ void readMenuItems(char const *filename, Menu *menu) {
     strcpy(menu->list[count]->name, name);
     strcpy(menu->list[count]->category, category);
     menu->list[count]->cost = cost;
-
- //   free(str);        //Causes errors
- //   str = readLine(fp);
+    
+//    free(str);
+//    str = readLine(fp);
     menu->count = menu->count + 1; 
     count++;
   }

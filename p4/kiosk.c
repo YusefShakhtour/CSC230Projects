@@ -13,8 +13,8 @@
 
 
 /**
- *  *An OrderItem
- *   */
+ * An OrderItem
+ */
 struct OrderItem {
   int quantity;
   MenuItem *m;
@@ -22,8 +22,8 @@ struct OrderItem {
 typedef struct OrderItem OrderItem;
 
 /**
- *  *An Order
- *   */
+ * An Order
+ */
 struct Order {
   int count;
   int capacity;
@@ -112,7 +112,7 @@ static bool testCat(MenuItem const *item, char const *str) {
  * @param id the id of the desired item
  * @param quantity the quantity ordered
  */
-void addOrder(Order *order, Menu *menu, char *id, int quantity) {  //WORKING
+static void addOrder(Order *order, Menu *menu, char *id, int quantity) {  //WORKING
   MenuItem *cpy; //Unneccesary middleman
 
   for (int i = 0; i < menu->count; i++) {
@@ -139,7 +139,7 @@ void addOrder(Order *order, Menu *menu, char *id, int quantity) {  //WORKING
  * @param id the id to remove
  * @param quantity the number to remove
  */
-void removeOrder(Order *order, char *id, int quantity) {  //WORKING
+static void removeOrder(Order *order, char *id, int quantity) {  //WORKING
   for (int i = 0; i < order->count; i++) {
     if (strcmp(order->list[i]->m->id, id) == 0) {
       if (quantity < order->list[i]->quantity) {
@@ -161,9 +161,10 @@ void removeOrder(Order *order, char *id, int quantity) {  //WORKING
 }
 
 /**
- *
+ * A helper method that will free allocated memory from an order
+ * @param order the order to free
  */
-void freeOrder(Order *order) {
+static void freeOrder(Order *order) {
   for (int i = 0; i < order->count; i++) {
     free(order->list[i]);
   }
@@ -175,7 +176,7 @@ void freeOrder(Order *order) {
  * A helper method that acts as a constructor for an order
  * @return Order the constructed order
  */
-Order *makeOrder() {  //WORKING
+static Order *makeOrder() {  //WORKING
   Order *order = malloc(sizeof(Order));
   order->capacity = 5;
   order->count = 0;
@@ -202,9 +203,12 @@ void listOrderItems(Order *order, int (*compare)(void const *va, void const *vb)
 }
 
 /**
- *
+ * This helper method will check to ensure a particualr id exists in menu
+ * @param menu the menu to check
+ * @param id the id to match
+ * @return bool if it matches or not
  */
-bool menuCheck(Menu *menu, char *id) {
+static bool menuCheck(Menu *menu, char *id) {
   for (int i = 0; i < menu->count; i++) {
     if (strcmp(menu->list[i]->id, id) == 0) {
       return true;
@@ -213,7 +217,13 @@ bool menuCheck(Menu *menu, char *id) {
   return false;
 }
 
-bool orderCheck(Order *order, char *id) {
+/**
+ * This helper method will check to ensure a particular id exists in an order
+ * @param order the order to check
+ * @param id the id to match
+ * @return bool if it matches or not
+ */
+static bool orderCheck(Order *order, char *id) {
   for (int i = 0; i < order->count; i++) {
     if (strcmp(order->list[i]->m->id, id) == 0) {
       return true;
@@ -246,7 +256,7 @@ int main(int argc, char *argv[])
     readMenuItems(argv[i], menu);
   }
 
-  char *command = (char *)malloc(100);   //HERE
+  char *command = (char *)malloc(100);   //Initializing the command gets lost after readLine in the while condition
   command[0] = '\0';
   char temp[100];
   while ((command = readLine(stdin)) != NULL) {
@@ -331,45 +341,15 @@ int main(int argc, char *argv[])
     else {
       printf("Invalid command\n\n");
     }
-    
-//    if ((strcmp(command, "list menu") == 0) || (strcmp(command, "list menu ") == 0)) {   //Fix to detect whitespace probably need sscanf
-//      listMenuItems(menu, compare, trueTest, "\0");
-//      printf("\n");
-//    }
-//    else if ((strcmp(command, "list order") == 0) || (strcmp(command, "list order ") == 0)) {
-//     listOrderItems(order, orderCompare);
-//      printf("\n");
-//    }
-//    else if (strcmp(command, "quit") == 0) {
-//      goto nExit;
-//    }
-//    else if (strcmp(temp, "add") == 0) {
-//      char id[5];
-//      int quantity;
-//      sscanf(command, "%*s%s%d", id, &quantity);
-//      addOrder(order, menu, id, quantity);
-//      printf("\n");
-//    }
-//    else if (strcmp(temp, "remove") == 0) {
-//      char id[5];
-//      int quantity;
-//     sscanf(command, "%*s%s%d", id, &quantity);
-//     removeOrder(order, id, quantity);
-//      printf("\n");
-//    }
-//    else if (strcmp(temp, "list") == 0) {  //if next string after list is menu, then invalid command  
-//      char cat[16];
-//      sscanf(command, "%*s%*s%s", cat); 
-//      listMenuItems(menu, compare, testCat, cat);
-//      printf("\n"); 
-//    }
+
+  free(command);
   }
   printf("%s", "cmd> ");    
   nExit: {};
 
   free(command);
-  free(menu);
-  free(order);
+  freeMenu(menu);
+  freeOrder(order);
 
   return EXIT_SUCCESS;
 }

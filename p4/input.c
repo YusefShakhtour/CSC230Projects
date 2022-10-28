@@ -11,6 +11,7 @@ char *readLine(FILE *fp) {    //TESTED SHOULD BE GOOD
   char ch = fgetc(fp);
 
   if (ch == EOF) {
+    free(str);
     return NULL; //not string NULL
   }
   int count = 0;
@@ -20,26 +21,13 @@ char *readLine(FILE *fp) {    //TESTED SHOULD BE GOOD
     }
     if (strlen(str) >= cap) {
       cap = cap * 2;
-      str = (char *)realloc(str, cap);
+      str = (char *)realloc(str, sizeof(char) * cap);
     }
     str[count] = ch;
     count++;
     ch = fgetc(fp);
   }
-  //  printf("%d %d\n", count, cap);
     str[count] = '\0';
-//  printf("%s%d","LENGHT", len);
-//Fomr here on is garbage
-//  char *str = (char *)malloc(len);   //Dont need to count lenght of line
-//  str[0] = '\0';
-//  ch = '\0';
-//  fseek(fp, -len, SEEK_CUR);
-//  int count = 0;
-//  for (int i = 0; i < len; i++) {
-//    ch = fgetc(fp);
-//    str[i] = ch;
-//    count++;
-//  str[count - 1] = '\0';
   return str;
 }
 
