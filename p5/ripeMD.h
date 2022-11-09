@@ -18,21 +18,6 @@ typedef unsigned int longword;
 /** Number of iterations for each round. */
 #define RIPE_ITERATIONS 16
 
-/**
- *
- */
-void initState(HashState *state);
-
-/**
- *
- */
-void padBuffer(ByteBuffer *buffer);
-
-/**
- *
- */
-void hashBlock(HashState *state, byte block[BLOCK_BYTES]);
-
 /** Type for a pointer to the bitwise f function used in each round. */
 typedef longword (*BitwiseFunction)( longword b, longword c, longword d );
 
@@ -57,6 +42,21 @@ typedef struct {
   longword E;
   
 } HashState;
+
+/**
+ *
+ */
+void initState(HashState *state);
+
+/**
+ *
+ */
+void padBuffer(ByteBuffer *buffer);
+
+/**
+ *
+ */
+void hashBlock(HashState *state, byte block[BLOCK_BYTES]);
 
 // If we're compiling for test, expose a collection of wrapper
 // functions that let us (indirectly) call internal (static) functions

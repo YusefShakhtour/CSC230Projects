@@ -36,7 +36,7 @@ int main()
   // down past the blocks of code below.  That will enable tests of
   // various functions you're expected to implement.
 
-#ifdef NEVER
+//#ifdef NEVER
   
   ////////////////////////////////////////////////////////////////////////
   // Tests for byteBuffer component.
@@ -216,15 +216,19 @@ int main()
     
     result = rotateLeftWrapper( 0x00000001, 1 );
     TestCase( result == 0x00000002 );
+
     
     result = rotateLeftWrapper( 0x80000000, 1 );
     TestCase( result == 0x00000001 );
-    
+
+
     result = rotateLeftWrapper( 0x6223818F, 3 );
     TestCase( result == 0x111C0C7B );
 
+
     result = rotateLeftWrapper( 0x9C913C27, 11 );
     TestCase( result == 0x89E13CE4 );
+
   }
 
   ////////////////////////////////////////////////////////////////////////
@@ -255,6 +259,8 @@ int main()
       
     TestCase( buffer->len == 64 );
 
+
+
     // This should be the buffer, padded with a 0x80, then enough zero bytes
     // to make it 8 bytes less than a multiple of 64 bytes in length.
     // Then, the last 8 bytes are the number of bits in the original
@@ -283,6 +289,8 @@ int main()
     
     // Check the size field at the end.
     TestCase( memcmp( buffer->data + 56, expected + 56, 8 ) == 0 );
+
+
     
     freeBuffer( buffer );
   }
@@ -332,8 +340,9 @@ int main()
     for ( int i = 0; str[ i ]; i++ )
       addByte( buffer, str[ i ] );
     padBuffer( buffer );
-      
+    
     TestCase( buffer->len == 192 );
+
 
     // Same as before, but now the message is a little bit longer.
     unsigned char expected[ 192 ] =
@@ -365,6 +374,8 @@ int main()
     TestCase( memcmp( buffer->data, expected, 192 ) == 0 );
     freeBuffer( buffer );
   }
+
+
 
   ////////////////////////////////////////////////////////////////////////
   // Test the hashIteration() function
@@ -436,7 +447,8 @@ int main()
     TestCase( state.D == 0xA94DB222 );
     TestCase( state.E == 0x5E9B703B );
   }
-  
+
+ 
   ////////////////////////////////////////////////////////////////////////
   // Test the hashRound() function
   
@@ -499,7 +511,7 @@ int main()
     TestCase( state.D == 0xA2BA24D6 );
     TestCase( state.E == 0x28752D9C );
   }
-
+#ifdef NEVER //NEW DEFINTA//////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////
   // Test the hashBlock() function
   
