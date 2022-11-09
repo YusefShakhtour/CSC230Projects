@@ -123,22 +123,60 @@ void hashBlock(HashState *state, byte block[BLOCK_BYTES]) {
   longword (*leftBitwise[5]) (longword a, longword b, longword c) = {bitwiseF0, bitwiseF1, bitwiseF2, bitwiseF3, bitwiseF4};
   longword (*rightBitwise[5]) (longword a, longword b, longword c) = {bitwiseF4, bitwiseF3, bitwiseF2, bitwiseF1, bitwiseF0};
   
-  struct HashState *leftState; 
-  struct HashState *rightState;
-  initState(leftState);
-  initState(rightState);
-  
+  longword data[16];
+  for (int i = 0; i < 16; i++) {
+
+    int one = block[4 * i + 3];
+    int two = block[4 * i + 2];
+    int three = block[4 * i + 1];
+    int four = block[4 * i + 0];
+    longword lw = 0x0;
+    lw = (one << 24) | (two << 16) | (three << 8) | (four);
+    data[i] = lw;
+  }
+
+  HashState leftState;
+  HashState rightState;
+  initState(&leftState);
+  initState(&rightState);
+  leftState = *state;
+  rightState = *state;
+
+ 
   //Left Side rounds
   for (int i = 0; i < 5; i++) {
-    hashRound(leftState, data, leftPerm + i, leftShift + i, leftNoise[i], leftBitwise[i]);
+    hashRound(&leftState, data, *(leftPerm + i), *(leftShift + i), leftNoise[i], leftBitwise[i]);
   } 
   //Right side rounds
   for (int i = 0; i < 5; i++) {
-    hashRound(rightState, data, rightPerm + i, rightShift + i, rightNoise[i], rightBitwise[i]);
+    hashRound(&rightState, data, *(rightPerm + i), *(rightShift + i), rightNoise[i], rightBitwise[i]);
   }
-  
-}
+ 
+  //Doing all the operations on "newA"
+  //  newA = state->A + f(state->B, state->C, state->D);
+  //  newA += datum;
+  //  newA += noise;
+  //  newA = rotateLeft(newA, shift);
+  //  newA += state->E;
+  //
+  //  state->A = state->E;  //Moving e to a
+  //  state->E = state->D;  //Moving d to e
+  //  state->D = rotateLeft(state->C, 10);  //Moving c shifted 10 to d
+  //  state->C = state->B;  //Moving b to c
+  //  state->B = newA;  //Replacing b with newA
 
+  longword newA = state->B + leftState.C + rightState.D;
+  longword newB = state->C + leftState.D + rightState.E;
+  longword newC = state->D + leftState.E + rightState.A;
+  longword newD = state->E + leftState.A + rightState.B;
+  longword newE = state->A + leftState.B + rightState.C;
+  
+  state->A = newA;
+  state->B = newB;
+  state->C = newC;
+  state->D = newD;
+  state->E = newE;
+}
 
 // Put the following at the end of your implementation file.
 // If we're compiling for unit tests, create wrappers for the otherwise

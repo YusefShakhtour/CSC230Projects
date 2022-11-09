@@ -29,9 +29,7 @@ void addByte(ByteBuffer *buffer, byte b) {
 
 
 void freeBuffer(ByteBuffer *buffer) {
-//  for (int i = 0; i < buffer->cap; i++) {
-//    free(buffer->list[i]);
-//  }
+
   free(buffer->data);
   free(buffer);
 }
@@ -42,12 +40,18 @@ ByteBuffer *readFile(const char *filename) {
   FILE *fp = fopen(filename, "rb");
   if (fp == NULL) {
     return NULL;
-  }                      //If wanting to go char at a time use feof
-                         //char is signed, need to be unsigned. Might cast but might not.  
-  char ch = fgetc(fp);   //Use fread fseek and ftell to read the whole thing at once
-  while (ch != EOF) {   //Read everything into data
+  } 
+                   
+  fseek(fp, 0, SEEK_END);   //Go to end of file
+  long end = ftell(fp);     //Tell me where that end of file is
+  fseek(fp, 0, SEEK_SET);   //Go back to beginning
+  char ch = fgetc(fp);      
+  int count = 0;           
+  while (count < end) {   //Keep reading until we reach the final position in the file
     addByte(buffer, ch);
     ch = fgetc(fp);
-  }
+    count++;
+  } 
+ 
   return buffer; 
 }

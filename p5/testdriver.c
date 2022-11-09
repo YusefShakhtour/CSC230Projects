@@ -145,6 +145,7 @@ int main()
     
     // Make sure it looks like we got the whole input file.
     TestCase( buffer->len == 11328 );
+ 
     TestCase( buffer->data[ 11327 ] == 0x1b );
     
     freeBuffer( buffer );
@@ -511,7 +512,6 @@ int main()
     TestCase( state.D == 0xA2BA24D6 );
     TestCase( state.E == 0x28752D9C );
   }
-#ifdef NEVER //NEW DEFINTA//////////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////////////////
   // Test the hashBlock() function
   
@@ -534,6 +534,7 @@ int main()
     hashBlock( &state, data );
       
     TestCase( state.A == 0xF56C82A5 );
+   // printf("%x", state.A);
     TestCase( state.B == 0x1E4B4FCF );
     TestCase( state.C == 0x1B509AE4 );
     TestCase( state.D == 0xFBA0BB5D );
@@ -565,7 +566,8 @@ int main()
     TestCase( state.E == 0x639BEE89 );
   }
 
-  
+#ifdef NEVER //NEW DEFINTA//////////////////////////////////////////////////////////////////
+ //////////////////////////////////////////////////////////////////////// 
 #endif
 
   printf( "You passed %d / %d unit tests\n", passedTests, totalTests );
