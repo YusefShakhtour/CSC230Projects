@@ -1,4 +1,9 @@
-/** 
+/**
+ * @file byteBuffer.c
+ * @author Yusef Shakhtour (yfshakht)
+ * This file defines all the prototypes in byteBuffer.h.
+ * These functions are used to change and manipulate byteBuffer structs
+ * in order to fill them with file data and keep the struct fields updated 
 */
 
 #include "byteBuffer.h"
@@ -6,7 +11,7 @@
 #include <stdlib.h>
 
 ByteBuffer *createBuffer() {
-  ByteBuffer *buffer = (ByteBuffer *)malloc(sizeof(ByteBuffer));  //Changed to pointer
+  ByteBuffer *buffer = (ByteBuffer *)malloc(sizeof(ByteBuffer));
   buffer->len = 0;
   buffer->cap = 5;
   buffer->data = (byte *)malloc(buffer->cap * sizeof(byte));
