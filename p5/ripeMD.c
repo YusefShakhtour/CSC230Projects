@@ -38,8 +38,27 @@ void padBuffer(ByteBuffer *buffer) {
   }
 }
 
-void printHash(HashState *state) { 
-  printf("%x%x%x%x%x", state->A, state->B, state->C, state->D, state->E); 
+/**
+ * Helper
+ */
+static longword printHelp(longword letter) {
+  longword change = 0x00000000;
+  int one = (letter & 0xFF);
+  int two = ((letter >> 8) & 0xFF);
+  int three = ((letter >> 16) & 0xFF);
+  int four = ((letter >> 24) & 0xFF);
+  change = (one << 24) | (two << 16) | (three << 8) | (four);
+  return change;
+}
+
+void printHash(HashState *state) {
+  longword newA = printHelp(state->A);
+  longword newB = printHelp(state->B);
+  longword newC = printHelp(state->C);
+  longword newD = printHelp(state->D);
+  longword newE = printHelp(state->E);
+   
+  printf("%08x%08x%08x%08x%08x\n", newA, newB, newC, newD, newE); 
 }
 
 static longword bitwiseF0(longword a, longword b, longword c) {
@@ -125,7 +144,6 @@ void hashBlock(HashState *state, byte block[BLOCK_BYTES]) {
   
   longword data[16];
   for (int i = 0; i < 16; i++) {
-
     int one = block[4 * i + 3];
     int two = block[4 * i + 2];
     int three = block[4 * i + 1];

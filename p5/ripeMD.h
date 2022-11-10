@@ -56,6 +56,11 @@ void padBuffer(ByteBuffer *buffer);
 /**
  *
  */
+void printHash(HashState *state);
+
+/**
+ *
+ */
 void hashBlock(HashState *state, byte block[BLOCK_BYTES]);
 
 // If we're compiling for test, expose a collection of wrapper

@@ -13,9 +13,9 @@ ByteBuffer *createBuffer() {
   return buffer;
 }
 
-
+//
 void addByte(ByteBuffer *buffer, byte b) {
-  if (buffer->cap > buffer->len) {      //Need to allocate data for every add? Or did the allocation in create already allocate enough for all of capacity?
+  if (buffer->cap > buffer->len) {  
     buffer->data[buffer->len] = b;
     buffer->len += 1;
   }
@@ -52,6 +52,6 @@ ByteBuffer *readFile(const char *filename) {
     ch = fgetc(fp);
     count++;
   } 
- 
+  fclose(fp); 
   return buffer; 
 }
