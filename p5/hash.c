@@ -21,14 +21,10 @@ int main(int argc, char *argv[]) {
   HashState state;
   initState(&state);
   for (int i = 0; i < (b->len) / 64; i++) {
- //   printf("%x\n", state.A);
     hashBlock(&state, &(b->data)[i * 64]);
- //   printf("%x\n", state.A);
   } 
-//  int size = b->len;
-//  printf("%d\n", size);
   printHash(&state); 
- 
+
   freeBuffer(b); 
   return EXIT_SUCCESS;
 }

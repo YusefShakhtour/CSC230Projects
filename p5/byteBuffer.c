@@ -13,7 +13,7 @@ ByteBuffer *createBuffer() {
   return buffer;
 }
 
-//
+
 void addByte(ByteBuffer *buffer, byte b) {
   if (buffer->cap > buffer->len) {  
     buffer->data[buffer->len] = b;
@@ -29,7 +29,6 @@ void addByte(ByteBuffer *buffer, byte b) {
 
 
 void freeBuffer(ByteBuffer *buffer) {
-
   free(buffer->data);
   free(buffer);
 }

@@ -1,7 +1,7 @@
 hash: ripeMD.o byteBuffer.o hash.c
 	gcc -Wall -std=c99 -g hash.c byteBuffer.c ripeMD.c -o hash
 
-testdriver: ripeMD.o byteBuffer.o testdriver.c
+testdriver: ripeMD.c byteBuffer.c testdriver.c
 	gcc -Wall -std=c99 -g -DTESTABLE testdriver.c ripeMD.c byteBuffer.c -o testdriver
 
 byteBuffer.o: byteBuffer.h byteBuffer.c
