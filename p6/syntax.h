@@ -61,9 +61,9 @@ Expr *makeAdd( Expr *left, Expr *right );
 Expr *makeLen(Expr *expr);
 
 
-Expr *makeSeqInit(Sequence *seq);
+Expr *makeSeqInit(int len, Expr **elist);
 
-
+Expr *makeSeqIdx(Expr *expr1, Expr *expr2);
 
 /** Make an expression that subtracts its second operand from the
     first. This new object will take ownership of the memory pointed

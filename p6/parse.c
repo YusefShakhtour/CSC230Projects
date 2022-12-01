@@ -234,6 +234,22 @@ static bool isInfixOperator( char const *tok )
     strcmp( tok, "[" ) == 0;
 }
 
+
+typedef struct {
+  int len;
+  int cap;
+  Expr **elist;
+} ExprList;
+
+static ExprList *makeExprList() {
+  ExprList *elist = (ExprList *)malloc(sizeof(ExprList));
+  elist->cap = 5;
+  elist->len = 0;
+  elist->elist = (Expr **)malloc(sizeof(Expr *) * elist->cap);
+  return elist;
+}
+
+
 /** Parse a building block for a larger expression, either a literal, a
     variable, or an expression inside parentheses.
     @param tok next token from the input.
@@ -249,16 +265,59 @@ static Expr *parseTerm( char tok[ MAX_TOKEN + 1 ], FILE *fp )
   }
 
   if ( strcmp( tok, "[" ) == 0 ) {
-    Sequence *newSeq = makeSequence();
-    Expr *expr = makeSeqInit(newSeq);
-    requireToken( "]", fp );
-    return expr;
+  //  char c = getc(fp);
+    
+    if (strcmp(expectToken(tok, fp), "]") == 0) {//c == ']') {  //strcmp(expectToken(tok, fp), "]") == 0) {
+     // putc(c, fp);
+     // expectToken(tok, fp);
+      Expr *expr = makeSeqInit(0, NULL); 
+      return expr;
+    }
+    else {
+    //  putc(c, fp);
+      ExprList *elist = makeExprList();
+      int flag = 1;
+      while (flag) {
+        Expr *expr = parseExpr(expectToken( tok, fp ), fp );   //While loop waiting for last bracket??
+        if (elist->len < elist->cap) {
+          elist->elist[elist->len] = expr;
+          elist->len++; 
+        }
+        else {
+          elist->cap *= 2;
+          elist->elist = (Expr **)realloc(elist->elist, sizeof(Expr *) * elist->cap);
+          elist->elist[elist->len] = expr;
+          elist->len++;
+        }
+        if (strcmp(expectToken(tok, fp), "]") == 0) {
+          return makeSeqInit(elist->len, elist->elist);
+        }
+        else {
+         continue; 
+        }
+      }
+     //Not evaluated
+      return NULL;
+    }
   }
 
-  if ( strcmp( tok, "\"" ) == 0 ) {
-    Sequence *newSeq = makeSequence();
-    Expr *expr = makeSeqInit(newSeq);
-    requireToken( "\"", fp );
+  if ( tok[0] == '\"') {
+      ExprList *elist = makeExprList();
+      for (int i = 1; tok[i] != '\"'; i++) {
+        Expr *expr = makeLiteralInt(tok[i]);
+        if (elist->len < elist->cap) {
+          elist->elist[elist->len] = expr;
+          elist->len++;
+        }
+        else {
+          elist->cap *= 2;
+          elist->elist = (Expr **)realloc(elist->elist, sizeof(Expr *) * elist->cap);
+          elist->elist[elist->len] = expr;
+          elist->len++;
+        }
+      }
+
+    Expr *expr = makeSeqInit(elist->len, elist->elist);
     return expr;
   }
 
@@ -323,6 +382,9 @@ static Expr *parseExpr( char *tok, FILE *fp )
       left = makeLess( left, right );
     } else if ( strcmp( op, "==" ) == 0 ) {
       left = makeEquals( left, right );
+    } else if ( strcmp( op, "[" ) == 0 ) {
+      left = makeSeqIdx(left, right);
+      requireToken( "]", fp );
     }
   }
 

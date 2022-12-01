@@ -13,7 +13,7 @@ Sequence *makeSequence()
   sequence->cap = 5;
   sequence->seq = (int *)malloc(sizeof(int) * sequence->cap);
   sequence->len = 0;
-  sequence->ref = 1;
+  sequence->ref = 0;
   return sequence;
 }
 
@@ -103,7 +103,10 @@ void setVariable( Environment *env, char const *name, Value value )
 
 void freeEnvironment( Environment *env )
 {
+  //Go through the vlist and check if it is a seq, if it is free it. vlist[0]->val.vtype == sequecnetype
   free( env->vlist );
+
+
   free( env );
 }
 

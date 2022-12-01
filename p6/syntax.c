@@ -85,30 +85,41 @@ typedef struct {
   Value (*eval)( Expr *expr, Environment *env );
   void (*destroy)( Expr *expr );
 
-  /** Sequence value **/
-  
-  Sequence *seq;
-  
+  /** Sequence value **/ 
+//  Sequence *seq;
+  int len;
+  Expr **elist;
 } SeqInit;
 
 /** Implementation of eval for SeqInit expressions. */
 static Value evalSeqInit( Expr *expr, Environment *env )
 {
-  // If this function gets called, expr must really be a LiteralInt.
+  // If this function gets called, expr must really be a SeqInit.
   SeqInit *this = (SeqInit *)expr;
 
+  Sequence *newSeq = makeSequence();
+ // grabSequence(newSeq);
+
+  for (int i = 0; i < this->len; i++) {
+    Value v = this->elist[i]->eval( this->elist[i], env );
+    newSeq->seq[i] = v.ival;
+    newSeq->len++;
+  }
+
   // Return an int value containing a copy of the value we represent.
-  return (Value){ SeqType, .sval = this->seq };
+  return (Value){ SeqType, .sval = newSeq };
 }
 
 static void destroySeqInit( Expr *expr )
-{ 
-  // This object is just one block of memory.  We can free it without
-  // even having to type-cast its pointer.
-  free( expr );
+{
+  SeqInit *this = (SeqInit *)expr;
+  for (int i = 0; i < this->len; i++) {
+    free(this->elist[i]);
+  }
+  free( this );
 }
 
-Expr *makeSeqInit(Sequence *seq)
+Expr *makeSeqInit(int len, Expr **elist)
 {
   // Allocate space for the SeqInit object
   SeqInit *this = (SeqInit *) malloc( sizeof( SeqInit ) );
@@ -118,7 +129,10 @@ Expr *makeSeqInit(Sequence *seq)
   this->destroy = destroySeqInit;
 
   // Remember the sequence we contain.
-  this->seq = seq;
+  //this->seq = seq;
+  this->len = len;
+  this->elist = (Expr **)malloc(sizeof(Expr *) * len);
+  this->elist = elist; 
 
   // Return the result, as an instance of the Expr superclass.
   return (Expr *) this;
@@ -185,6 +199,26 @@ static Expr *buildSimpleExpr( Expr *expr1, Expr *expr2,
   return (Expr *) this;
 }
 
+
+//////////////////////////////////////////////////////////////////////
+// Sequence Index Expression
+
+static Value evalSeqIdx(Expr *expr, Environment *env) {
+  SimpleExpr *this = (SimpleExpr *)expr;
+
+  Value v1 = this->expr1->eval(this->expr1, env);
+  Value v2 = this->expr2->eval(this->expr2, env);
+  requireSeqType(&v1);
+  requireIntType(&v2);
+
+  return (Value) {IntType, .ival = v1.sval->seq[v2.ival]};
+
+}
+
+Expr *makeSeqIdx(Expr *expr1, Expr *expr2) {
+  return buildSimpleExpr(expr1, expr2, evalSeqIdx);
+}
+
 //////////////////////////////////////////////////////////////////////
 // Len Expression
 
@@ -198,6 +232,8 @@ static Value evalLen( Expr *expr, Environment *env )
   Value v = this->expr1->eval( this->expr1, env );
   // Make sure the operand is a sequence.
   requireSeqType( &v );
+
+ // releaseSequence(v.sval);
   // Return the len of the sequence.
   return (Value){ IntType, .ival = v.sval->len };
 }  
