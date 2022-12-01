@@ -23,6 +23,12 @@ static void requireIntType( Value const *v )
     reportTypeMismatch();
 }
 
+static void requireSeqType( Value const *v )
+{
+  if ( v->vtype != SeqType )
+    reportTypeMismatch();
+}
+
 //////////////////////////////////////////////////////////////////////
 // LiteralInt
 
@@ -65,6 +71,54 @@ Expr *makeLiteralInt( int val )
 
   // Remember the integer value we contain.
   this->val = val;
+
+  // Return the result, as an instance of the Expr superclass.
+  return (Expr *) this;
+}
+
+//////////////////////////////////////////////////////////////////////
+// Sequence initializer
+
+/** Representation for a Sequence Initializer expression, a subclass of Expr that
+    evaluates to a sequence of ints. **/
+typedef struct {
+  Value (*eval)( Expr *expr, Environment *env );
+  void (*destroy)( Expr *expr );
+
+  /** Sequence value **/
+  
+  Sequence *seq;
+  
+} SeqInit;
+
+/** Implementation of eval for SeqInit expressions. */
+static Value evalSeqInit( Expr *expr, Environment *env )
+{
+  // If this function gets called, expr must really be a LiteralInt.
+  SeqInit *this = (SeqInit *)expr;
+
+  // Return an int value containing a copy of the value we represent.
+  return (Value){ SeqType, .sval = this->seq };
+}
+
+static void destroySeqInit( Expr *expr )
+{ 
+  // This object is just one block of memory.  We can free it without
+  // even having to type-cast its pointer.
+  free( expr );
+}
+
+Expr *makeSeqInit(Sequence *seq)
+{
+  // Allocate space for the SeqInit object
+  SeqInit *this = (SeqInit *) malloc( sizeof( SeqInit ) );
+
+  // Remember the pointers to functions for evaluating and destroying ourself.
+  this->eval = evalSeqInit;
+  this->destroy = destroySeqInit;
+
+  // Remember the sequence we contain.
+  this->seq = seq;
 
   // Return the result, as an instance of the Expr superclass.
   return (Expr *) this;
@@ -129,6 +183,29 @@ static Expr *buildSimpleExpr( Expr *expr1, Expr *expr2,
   this->expr2 = expr2;
 
   return (Expr *) this;
+}
+
+//////////////////////////////////////////////////////////////////////
+// Len Expression
+
+/** Implementation of the eval function for len expression. */
+
+static Value evalLen( Expr *expr, Environment *env )
+{
+  // If this function gets called, expr must really be a SimpleExpr.
+  SimpleExpr *this = (SimpleExpr *)expr;
+  // Evaluate operand
+  Value v = this->expr1->eval( this->expr1, env );
+  // Make sure the operand is a sequence.
+  requireSeqType( &v );
+  // Return the len of the sequence.
+  return (Value){ IntType, .ival = v.sval->len };
+}  
+
+Expr *makeLen( Expr *expr )
+{
+  // Use the convenience function to build a SimpleExpr for addition
+  return buildSimpleExpr( expr, NULL, evalLen );
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -442,6 +519,47 @@ static void destroySimpleStmt( Stmt *stmt )
 }
 
 //////////////////////////////////////////////////////////////////////
+// Push statement
+
+static void executePush( Stmt *stmt, Environment *env ) {
+
+  // If this function gets called, stmt must really be a SimpleStmt.
+  SimpleStmt *this = (SimpleStmt *)stmt;
+  Value v1 = this->expr1->eval( this->expr1, env );
+  Value v2 = this->expr2->eval( this->expr2, env );
+
+
+  if (v1.sval->len < v1.sval->cap) {
+    v1.sval->seq[v1.sval->len] = v2.ival;
+    v1.sval->len++; 
+  }
+  else {
+    v1.sval->cap *= 2;
+    v1.sval->seq = (int *)realloc(v1.sval->seq, sizeof(int) * v1.sval->cap);
+    v1.sval->seq[v1.sval->len] = v2.ival;
+    v1.sval->len++;
+  }
+
+}
+
+Stmt *makePush( Expr *expr1, Expr *expr2 ) {
+  // Allocate space for the SimpleStmt object
+  SimpleStmt *this = (SimpleStmt *) malloc( sizeof( SimpleStmt ) );
+
+  // Remember the pointers to execute and destroy this statement.
+  this->execute = executePush;
+  this->destroy = destroySimpleStmt;
+
+  // Remember the expression for the thing we're supposed to push.
+  this->expr1 = expr1;
+  this->expr2 = expr2;
+
+  // Return the SimpleStmt object, as an instance of the Stmt interface.
+  return (Stmt *) this;
+}
+
+
+//////////////////////////////////////////////////////////////////////
 // Print Statement
 
 /** Implementation of execute for a print statement */
@@ -459,8 +577,9 @@ static void executePrint( Stmt *stmt, Environment *env )
   } else {
     // Replace with code to permit print a sequence as a string of
     // ASCII character codes.
-    fprintf( stderr, "Sequence printing not implemented\n" );
-    exit( 0 );
+    for (int i = 0; i < v.sval->len; i++) {
+      printf("%c", (v.sval->seq[i]));
+    }
   }
 }
 
@@ -689,8 +808,8 @@ static void executeAssignment( Stmt *stmt, Environment *env )
   
   if ( this->iexpr ) {
     // Replace with code to permit assigning to a sequence element.
-    fprintf( stderr, "Assignment to sequence elements not implemented\n" );
-    exit( 0 );
+    setVariable( env, this->name, result );
+    grabSequence(result.sval);
   } else {
     // It's a variable, change its value
     setVariable( env, this->name, result );

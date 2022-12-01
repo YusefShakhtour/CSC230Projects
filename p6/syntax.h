@@ -57,6 +57,14 @@ Expr *makeLiteralInt( int val );
  */
 Expr *makeAdd( Expr *left, Expr *right );
 
+
+Expr *makeLen(Expr *expr);
+
+
+Expr *makeSeqInit(Sequence *seq);
+
+
+
 /** Make an expression that subtracts its second operand from the
     first. This new object will take ownership of the memory pointed
     to by its two sub-expressions, freeing them when it is destroyed.
@@ -160,6 +168,9 @@ struct StmtStruct {
     @return a new print statement.
  */
 Stmt *makePrint( Expr *arg );
+
+
+Stmt *makePush(Expr *expr1, Expr *expr2);
 
 /** Make a compound statement, representing the sequence of statements
     @param len number of statements in stmtList.

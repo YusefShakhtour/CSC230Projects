@@ -14,8 +14,9 @@
 /** Representation for a seqeunce of integers.  One type of value supported
     by the language. */
 typedef struct {
-  // ... Add any fields you need for representing a sequence of integers
-  // ... and delete this comment.
+  int len;
+  int cap;
+  int *seq;
 
   /** Reference count for the sequence. */
   int ref;

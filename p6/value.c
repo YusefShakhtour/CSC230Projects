@@ -9,13 +9,18 @@
 
 Sequence *makeSequence()
 {
-  // Implement this function.
-  return NULL; // Just to make the compiler happy.
+  Sequence *sequence = (Sequence *)malloc(sizeof(sequence));
+  sequence->cap = 5;
+  sequence->seq = (int *)malloc(sizeof(int) * sequence->cap);
+  sequence->len = 0;
+  sequence->ref = 1;
+  return sequence;
 }
 
 void freeSequence( Sequence *seq )
 {
-  // Implement this function.
+  free(seq->seq);
+  free(seq);
 }
 
 void grabSequence( Sequence *seq )
