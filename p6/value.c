@@ -104,9 +104,12 @@ void setVariable( Environment *env, char const *name, Value value )
 void freeEnvironment( Environment *env )
 {
   //Go through the vlist and check if it is a seq, if it is free it. vlist[0]->val.vtype == sequecnetype
+//  for (int i = 0; i < env->len; i++) {
+//    if (env->vlist[i].val.vtype == SeqType) {
+//      free(env->vlist[i].val.sval->seq);
+//    }
+//  }
   free( env->vlist );
-
-
   free( env );
 }
 

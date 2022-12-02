@@ -279,11 +279,106 @@ static Value evalAdd( Expr *expr, Environment *env )
   Value v2 = this->expr2->eval( this->expr2, env );
 
   // Make sure the operands are both integers.
-  requireIntType( &v1 );
-  requireIntType( &v2 );
+  if (v1.vtype == IntType && v2.vtype == IntType) {
+    requireIntType( &v1 );
+    requireIntType( &v2 );
+    // Return the sum of the two expression values.
+    return (Value){ IntType, .ival = v1.ival + v2.ival };
+  }
 
-  // Return the sum of the two expression values.
-  return (Value){ IntType, .ival = v1.ival + v2.ival };
+  //Extra Credit
+  else if (v1.vtype == SeqType && v2.vtype == SeqType) {
+    int length = v1.sval->len + v2.sval->len;
+    Sequence *newSeq = makeSequence();
+    for (int i = 0; i < v1.sval->len; i++) {
+      if (newSeq->len < newSeq->cap) {
+        newSeq->seq[i] = v1.sval->seq[i];
+        newSeq->len++;
+      }
+      else {
+        newSeq->cap *= 2;
+        newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+        newSeq->seq[i] = v1.sval->seq[i];
+        newSeq->len++;
+      }
+    }
+    int idx = 0;
+    for (int i = v1.sval->len; i < length; i++) {
+      if (newSeq->len < newSeq->cap) {
+        newSeq->seq[i] = v2.sval->seq[idx];
+        newSeq->len++;
+        idx++;
+      }
+      else {
+        newSeq->cap *= 2;
+        newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+        newSeq->seq[i] = v2.sval->seq[idx];
+        newSeq->len++;
+        idx++;
+      }
+    }
+    return (Value){ SeqType, .sval = newSeq };
+  }
+  else if (v1.vtype == IntType && v2.vtype == SeqType) {   //Opposite of push, add to beginning.
+    Sequence *newSeq = makeSequence();
+    for (int i = 0; i < v2.sval->len; i++) {
+      if (newSeq->len < newSeq->cap) {
+        newSeq->seq[i] = v2.sval->seq[i];
+        newSeq->len++;
+      }
+      else {
+        newSeq->cap *= 2;
+        newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+        newSeq->seq[i] = v2.sval->seq[i];
+        newSeq->len++;
+      }
+    }
+    if (newSeq->len < newSeq->cap) {   //Can't just add to 0, have to move things over
+      for (int i = newSeq->len + 1; i >= 1; i--) {
+        newSeq->seq[i] = newSeq->seq[i - 1];
+      }
+      newSeq->seq[0] = v1.ival;
+      newSeq->len++;
+    }
+    else {
+      newSeq->cap *= 2;
+      newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+      for (int i = newSeq->len + 1; i >= 1; i--) {
+        newSeq->seq[i] = newSeq->seq[i - 1];
+      }
+      newSeq->seq[0] = v1.ival;
+      newSeq->len++;
+    }
+    return (Value){ SeqType, .sval = newSeq };
+  }
+  else if (v1.vtype == SeqType && v2.vtype == IntType) {    //If first param if sequence and next is int. Basically push
+    Sequence *newSeq = makeSequence();
+    for (int i = 0; i < v1.sval->len; i++) {
+      if (newSeq->len < newSeq->cap) {
+        newSeq->seq[i] = v1.sval->seq[i];
+        newSeq->len++;
+      }
+      else {
+        newSeq->cap *= 2;
+        newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+        newSeq->seq[i] = v1.sval->seq[i];
+        newSeq->len++;
+      }
+    }
+    if (newSeq->len < newSeq->cap) {
+      newSeq->seq[newSeq->len] = v2.ival;
+      newSeq->len++;
+    }
+    else {
+      newSeq->cap *= 2;
+      newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+      newSeq->seq[newSeq->len] = v2.ival;
+      newSeq->len++;
+    }
+    return (Value){ SeqType, .sval = newSeq };
+  }
+  //Never evaluated
+  return (Value){IntType, .ival = 0};
 }
 
 Expr *makeAdd( Expr *left, Expr *right )
@@ -333,11 +428,82 @@ static Value evalMul( Expr *expr, Environment *env )
   Value v2 = this->expr2->eval( this->expr2, env );
 
   // Make sure the operands are both integers.
-  requireIntType( &v1 );
-  requireIntType( &v2 );
+ // requireIntType( &v1 );
+ // requireIntType( &v2 );
+  if (v1.vtype == IntType && v2.vtype == IntType) {
+    // Return the product of the two expression.
+    return (Value){ IntType, .ival = v1.ival * v2.ival };
+  }
 
-  // Return the product of the two expression.
-  return (Value){ IntType, .ival = v1.ival * v2.ival };
+  else if (v1.vtype == IntType && v2.vtype == SeqType) {
+    Sequence *newSeq = makeSequence();
+    for (int i = 0; i < v2.sval->len; i++) {
+      if (newSeq->len < newSeq->cap) {
+        newSeq->seq[i] = v2.sval->seq[i];
+        newSeq->len++;
+      }
+      else {
+        newSeq->cap *= 2;
+        newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+        newSeq->seq[i] = v2.sval->seq[i];
+        newSeq->len++;
+      }
+    }
+    for (int j = newSeq->len; j < v2.sval->len * v1.ival; j += v2.sval->len)  {
+      for (int k = 0; k < v2.sval->len; k++) {
+        if (newSeq->len < newSeq->cap) {
+          newSeq->seq[j + k] = v2.sval->seq[k];
+          newSeq->len++;
+        }
+        else {
+          newSeq->cap *= 2;
+          newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+          newSeq->seq[j + k] = v2.sval->seq[k];
+          newSeq->len++;
+        }
+      }
+    }
+    return (Value){ SeqType, .sval = newSeq };
+  }
+
+  else if (v1.vtype == SeqType && v2.vtype == IntType) {
+    Sequence *newSeq = makeSequence();
+    for (int i = 0; i < v1.sval->len; i++) {
+      if (newSeq->len < newSeq->cap) {
+        newSeq->seq[i] = v1.sval->seq[i];
+        newSeq->len++;
+      }
+      else {
+        newSeq->cap *= 2;
+        newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+        newSeq->seq[i] = v1.sval->seq[i];
+        newSeq->len++;
+      }
+    }
+
+    for (int j = newSeq->len; j < v1.sval->len * v2.ival; j += v1.sval->len)  {
+      for (int k = 0; k < v1.sval->len; k++) {
+        if (newSeq->len < newSeq->cap) {
+          newSeq->seq[j + k] = v1.sval->seq[k];
+          newSeq->len++;
+        }
+        else {
+          newSeq->cap *= 2;
+          newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+          newSeq->seq[j + k] = v1.sval->seq[k];
+          newSeq->len++;
+        }
+      }
+    }
+    return (Value){ SeqType, .sval = newSeq };
+  } 
+  
+  else if (v1.vtype == SeqType && v2.vtype == SeqType) {
+    reportTypeMismatch();
+  }
+
+  //Not evaluated
+  return (Value){IntType, .ival = 0};  
 }
 
 Expr *makeMul( Expr *left, Expr *right )
