@@ -102,8 +102,16 @@ static Value evalSeqInit( Expr *expr, Environment *env )
 
   for (int i = 0; i < this->len; i++) {
     Value v = this->elist[i]->eval( this->elist[i], env );
-    newSeq->seq[i] = v.ival;
-    newSeq->len++;
+    if (newSeq->len < newSeq->cap) {
+      newSeq->seq[i] = v.ival;
+      newSeq->len++;
+    }
+    else {
+      newSeq->cap *= 2;
+      newSeq->seq = (int *)realloc(newSeq->seq, sizeof(int) * newSeq->cap);
+      newSeq->seq[i] = v.ival;
+      newSeq->len++;
+    }
   }
 
   // Return an int value containing a copy of the value we represent.
@@ -435,6 +443,7 @@ static Value evalLess( Expr *expr, Environment *env )
     // Is v1 less than v2
     return (Value){ IntType, .ival = v1.ival < v2.ival ? true : false };
   } else {
+    return (Value){ SeqType, .ival = v1.sval < v2.sval ? true : false };
     // Replace with code to compare sequences.
     fprintf( stderr, "Sequence comparison not implemented\n" );
     exit( 0 );
@@ -468,8 +477,7 @@ static Value evalEquals( Expr *expr, Environment *env )
     // Replace with code to permit sequence-sequence comparison.
     // A sequence can also be compared to an int, but they should
     // never be considered equal.
-    fprintf( stderr, "Sequence comparison not implemented\n" );
-    exit( 0 );
+    return (Value){SeqType, .ival = (v1.sval == v2.sval)};
   }
 
   // Never reached.
@@ -614,6 +622,7 @@ static void executePrint( Stmt *stmt, Environment *env )
     // Replace with code to permit print a sequence as a string of
     // ASCII character codes.
     for (int i = 0; i < v.sval->len; i++) {
+      
       printf("%c", (v.sval->seq[i]));
     }
   }
@@ -843,9 +852,12 @@ static void executeAssignment( Stmt *stmt, Environment *env )
   Value result = this->expr->eval( this->expr, env );
   
   if ( this->iexpr ) {
+    
     // Replace with code to permit assigning to a sequence element.
-    setVariable( env, this->name, result );
-    grabSequence(result.sval);
+    Sequence *seq = lookupVariable(env, this->name).sval;
+    seq->seq[this->iexpr->eval(this->iexpr,env).ival] = result.ival;
+  //  seq->seq[this->iexpr->eval(this->iexpr,env).ival] = result.ival;
+  //  grabSequence(result.sval);
   } else {
     // It's a variable, change its value
     setVariable( env, this->name, result );

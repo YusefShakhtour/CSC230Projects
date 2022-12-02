@@ -265,16 +265,13 @@ static Expr *parseTerm( char tok[ MAX_TOKEN + 1 ], FILE *fp )
   }
 
   if ( strcmp( tok, "[" ) == 0 ) {
-  //  char c = getc(fp);
-    
-    if (strcmp(expectToken(tok, fp), "]") == 0) {//c == ']') {  //strcmp(expectToken(tok, fp), "]") == 0) {
-     // putc(c, fp);
-     // expectToken(tok, fp);
+    char c = getc(fp); 
+    if (c == ']') {
       Expr *expr = makeSeqInit(0, NULL); 
       return expr;
     }
     else {
-    //  putc(c, fp);
+      putc(c, fp);
       ExprList *elist = makeExprList();
       int flag = 1;
       while (flag) {
@@ -467,6 +464,16 @@ Stmt *parseStmt( char *tok, FILE *fp )
       requireToken( ";", fp );
       // Make the assignment statement.
       return makeAssignment( vname, NULL, expr );
+    }
+    else if (strcmp(tok, "[") == 0) {
+      Expr *iexpr = parseExpr( expectToken( tok, fp ), fp );
+      requireToken("]", fp);
+      requireToken("=", fp);
+      expectToken(tok, fp);
+      Expr *expr = parseExpr( tok, fp );
+      requireToken(";", fp);
+      return makeAssignment(vname, iexpr, expr);
+      
     }
   }
 
