@@ -9,9 +9,9 @@
 
 Sequence *makeSequence()
 {
-  Sequence *sequence = (Sequence *)malloc(sizeof(sequence));
+  Sequence *sequence = (Sequence *)malloc(sizeof(Sequence));
   sequence->cap = 5;
-  sequence->seq = (int *)malloc((sizeof(int)) * (sequence->cap));
+  sequence->seq = (int *)malloc(sequence->cap * sizeof(int));
   sequence->len = 0;
   sequence->ref = 0;
   return sequence;
@@ -110,7 +110,7 @@ void freeEnvironment( Environment *env )
       freeSequence(env->vlist[i].val.sval);
     }
   }
-**/
+*/
 
   free( env->vlist );
   free( env );

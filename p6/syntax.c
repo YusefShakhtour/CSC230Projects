@@ -104,7 +104,7 @@ static Value evalSeqInit( Expr *expr, Environment *env )
   SeqInit *this = (SeqInit *)expr;
 
   Sequence *newSeq = makeSequence();
- // grabSequence(newSeq);
+  grabSequence(newSeq);                                //Where am I suppoed to release this sequence?
 
   for (int i = 0; i < this->len; i++) {
     Value v = this->elist[i]->eval( this->elist[i], env );
@@ -254,7 +254,7 @@ static Value evalLen( Expr *expr, Environment *env )
   // Make sure the operand is a sequence.
   requireSeqType( &v );
 
- // releaseSequence(v.sval);
+//  releaseSequence(v.sval);
   // Return the len of the sequence.
   return (Value){ IntType, .ival = v.sval->len };
 }  
@@ -1087,9 +1087,8 @@ static void executeAssignment( Stmt *stmt, Environment *env )
     
     // Replace with code to permit assigning to a sequence element.
     Sequence *seq = lookupVariable(env, this->name).sval;
+    grabSequence(seq);					//This make sense for grabbing?
     seq->seq[this->iexpr->eval(this->iexpr,env).ival] = result.ival;
-  //  seq->seq[this->iexpr->eval(this->iexpr,env).ival] = result.ival;
-  //  grabSequence(result.sval);
   } else {
     // It's a variable, change its value
     setVariable( env, this->name, result );
