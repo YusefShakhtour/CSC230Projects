@@ -11,7 +11,7 @@ Sequence *makeSequence()
 {
   Sequence *sequence = (Sequence *)malloc(sizeof(sequence));
   sequence->cap = 5;
-  sequence->seq = (int *)malloc(sizeof(int) * sequence->cap);
+  sequence->seq = (int *)malloc((sizeof(int)) * (sequence->cap));
   sequence->len = 0;
   sequence->ref = 0;
   return sequence;
@@ -104,11 +104,14 @@ void setVariable( Environment *env, char const *name, Value value )
 void freeEnvironment( Environment *env )
 {
   //Go through the vlist and check if it is a seq, if it is free it. vlist[0]->val.vtype == sequecnetype
-//  for (int i = 0; i < env->len; i++) {
-//    if (env->vlist[i].val.vtype == SeqType) {
-//      free(env->vlist[i].val.sval->seq);
-//    }
-//  }
+/**
+  for (int i = 0; i < env->len; i++) {
+    if (env->vlist[i].val.vtype == SeqType) {
+      freeSequence(env->vlist[i].val.sval);
+    }
+  }
+**/
+
   free( env->vlist );
   free( env );
 }
