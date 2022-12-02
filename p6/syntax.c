@@ -1,3 +1,8 @@
+/**@file expand.c
+ * @author (Partially) Yusef Shakhtour (yfshakht)
+ * This file defines functions that will be used to evaluate syntax from a program
+ */
+
 #include "syntax.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,7 +18,7 @@ static int reportTypeMismatch()
   exit( EXIT_FAILURE );
 }
 
-/** TODO **/
+/** Report an error for a program that goes out of bounds of a sequence, then exit **/
 static int reportOutofBounds() {
   fprintf(stderr, "Index out of bounds\n");
   exit(EXIT_FAILURE);
@@ -29,6 +34,10 @@ static void requireIntType( Value const *v )
     reportTypeMismatch();
 }
 
+/** Require a given value to be a SeqType value. Exit with an error
+ * message if not
+ * @param v value to check, passed by address
+ */
 static void requireSeqType( Value const *v )
 {
   if ( v->vtype != SeqType )
@@ -91,8 +100,6 @@ typedef struct {
   Value (*eval)( Expr *expr, Environment *env );
   void (*destroy)( Expr *expr );
 
-  /** Sequence value **/ 
-//  Sequence *seq;
   int len;
   Expr **elist;
 } SeqInit;
@@ -130,6 +137,7 @@ static void destroySeqInit( Expr *expr )
   for (int i = 0; i < this->len; i++) {
     free(this->elist[i]);
   }
+  free(this->elist);
   free( this );
 }
 
@@ -217,6 +225,7 @@ static Expr *buildSimpleExpr( Expr *expr1, Expr *expr2,
 //////////////////////////////////////////////////////////////////////
 // Sequence Index Expression
 
+/**Implementation of eval function for sequence index epxression**/
 static Value evalSeqIdx(Expr *expr, Environment *env) {
   SimpleExpr *this = (SimpleExpr *)expr;
 
@@ -244,7 +253,6 @@ Expr *makeSeqIdx(Expr *expr1, Expr *expr2) {
 // Len Expression
 
 /** Implementation of the eval function for len expression. */
-
 static Value evalLen( Expr *expr, Environment *env )
 {
   // If this function gets called, expr must really be a SimpleExpr.
@@ -576,6 +584,7 @@ Expr *makeAnd( Expr *left, Expr *right )
 //////////////////////////////////////////////////////////////////////
 // Logical or
 
+/**Implementation for logival or eval function**/
 static Value evalOr( Expr *expr, Environment *env )
 {
   // If this function gets called, expr must really be a SimpleExpr.
@@ -795,6 +804,7 @@ static void destroySimpleStmt( Stmt *stmt )
 //////////////////////////////////////////////////////////////////////
 // Push statement
 
+/**Implementation of execut for a push statement**/
 static void executePush( Stmt *stmt, Environment *env ) {
 
   // If this function gets called, stmt must really be a SimpleStmt.

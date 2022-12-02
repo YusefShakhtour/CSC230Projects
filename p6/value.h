@@ -10,6 +10,7 @@
 #define _VALUE_H_
 
 #include <stdbool.h>
+//#include "syntax.h"
 
 /** Representation for a seqeunce of integers.  One type of value supported
     by the language. */
@@ -21,6 +22,7 @@ typedef struct {
   /** Reference count for the sequence. */
   int ref;
 } Sequence;
+
 
 /** Create an empty sequence.
     @return pointer to the new, dynamically allocated sequence.

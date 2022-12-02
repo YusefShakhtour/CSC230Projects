@@ -21,9 +21,6 @@
 #define MAX_TOKEN 1023
 
 
-
-
-
 /** Read the next token from the given file, skipping whitespace or comments.
     @param tok storage for the token, with room for a string of up to
      MAX_TOKEN characters.

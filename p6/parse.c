@@ -1,3 +1,8 @@
+/** @file parse.c
+ *  @author (Partially) Yusef Shakhtour (yfshakht)
+ *  This file defines and uses functions that parse text from a given input program
+ */
+
 #include "parse.h"
 #include <stdlib.h>
 #include <string.h>
@@ -235,15 +240,20 @@ static bool isInfixOperator( char const *tok )
 }
 
 
+
+/**Representation for a list of expressions**/
 typedef struct {
   int len;
   int cap;
   Expr **elist;
 } ExprList;
 
+/** Helper method that is used to construct a list of expressions
+ *  @return ExprList a newly initialzied list of expressions
+ */
 static ExprList *makeExprList() {
   ExprList *elist = (ExprList *)malloc(sizeof(ExprList));
-  elist->cap = 5;
+  elist->cap = INITIAL_CAPACITY;
   elist->len = 0;
   elist->elist = (Expr **)malloc(sizeof(Expr *) * elist->cap);
   return elist;

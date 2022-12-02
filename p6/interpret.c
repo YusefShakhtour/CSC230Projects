@@ -1,3 +1,9 @@
+/** @file interpret.c
+ *  @author
+ *  This file holds our main method where everything will be evaluated
+ */
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

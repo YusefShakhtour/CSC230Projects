@@ -1,3 +1,10 @@
+/** @file value.c
+ *  @author (Partially) Yusef Shakhtour (yfshakht)
+ *  This file defines fucntions that will be used to manipulate and interpret different types 
+ *  of values used in our programs
+ */
+
+
 #include "value.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -104,13 +111,13 @@ void setVariable( Environment *env, char const *name, Value value )
 void freeEnvironment( Environment *env )
 {
   //Go through the vlist and check if it is a seq, if it is free it. vlist[0]->val.vtype == sequecnetype
-/**
-  for (int i = 0; i < env->len; i++) {
+
+/**  for (int i = 0; i < env->len; i++) {  	//Causing errors.
     if (env->vlist[i].val.vtype == SeqType) {
       freeSequence(env->vlist[i].val.sval);
     }
   }
-*/
+**/
 
   free( env->vlist );
   free( env );

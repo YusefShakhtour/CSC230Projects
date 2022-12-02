@@ -57,12 +57,25 @@ Expr *makeLiteralInt( int val );
  */
 Expr *makeAdd( Expr *left, Expr *right );
 
-
+/** Make an expression that evaluates the length of a given sequence.
+ *  @param expr the expr to find the length of 
+ *  @return pointer to a new subclass of Expr
+ */
 Expr *makeLen(Expr *expr);
 
-
+/** Make an expression that initializes a sequence given the lenght of the sequence
+ *  and a list of expressions in the sequence
+ *  @param len the lenght of the sequence
+ *  @param elist a list of expression pointers of different expression in the sequence
+ *  @return a pointer to a new subclass of Expr
+ */
 Expr *makeSeqInit(int len, Expr **elist);
 
+/** Make an expression that evaluates the value of a given expession from a sequence
+ *  @param expr1 the left hand side of the expr. IE list[3]
+ *  @param expr2 the right hand side of the expr 
+ *  @return a pointer to a new subclass of Expr
+ */
 Expr *makeSeqIdx(Expr *expr1, Expr *expr2);
 
 /** Make an expression that subtracts its second operand from the
@@ -169,7 +182,12 @@ struct StmtStruct {
  */
 Stmt *makePrint( Expr *arg );
 
-
+/** Make a statement that evaluates the arguments and adds the non seq arguments
+ *  to the end of the given sequence.
+ *  @param expr1 an expression that evalauates to a seq
+ *  @param expr2 an expression that evalauate to a literal int
+ *  @return a new push statement
+ */
 Stmt *makePush(Expr *expr1, Expr *expr2);
 
 /** Make a compound statement, representing the sequence of statements
