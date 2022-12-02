@@ -13,6 +13,12 @@ static int reportTypeMismatch()
   exit( EXIT_FAILURE );
 }
 
+/** TODO **/
+static int reportOutofBounds() {
+  fprintf(stderr, "Index out of bounds\n");
+  exit(EXIT_FAILURE);
+}
+
 /** Require a given value to be an IntType value.  Exit with an error
     message if not.
     @param v value to check, passed by address.
@@ -218,6 +224,13 @@ static Value evalSeqIdx(Expr *expr, Environment *env) {
   Value v2 = this->expr2->eval(this->expr2, env);
   requireSeqType(&v1);
   requireIntType(&v2);
+   
+  if (v2.ival > v1.sval->len - 1) {
+    reportOutofBounds();
+  }
+  else if (v2.ival < 0) {
+    reportOutofBounds();
+  }
 
   return (Value) {IntType, .ival = v1.sval->seq[v2.ival]};
 
@@ -442,11 +455,44 @@ static Value evalLess( Expr *expr, Environment *env )
   if ( v1.vtype == IntType ) {
     // Is v1 less than v2
     return (Value){ IntType, .ival = v1.ival < v2.ival ? true : false };
-  } else {
-    return (Value){ SeqType, .ival = v1.sval < v2.sval ? true : false };
+  } 
+  else {
+      if (v1.sval->len != v2.sval->len) {
+        int leng;
+        if (v1.sval->len < v2.sval->len) {
+           leng = v1.sval->len;
+        }
+        else {
+           leng = v2.sval->len;
+        }
+        for (int i = 0; i < leng; i++) {
+          if (v1.sval->seq[i] < v2.sval->seq[i]) {
+            return (Value){IntType, .ival = 1};
+          }
+        }
+        if (v1.sval->len == leng) {
+          return (Value){IntType, .ival = 1};
+        }
+        else {
+          return (Value){IntType, .ival = 0};
+        }
+      }
+      else {
+        for (int i = 0; i < v1.sval->len; i++) {
+          if (v1.sval->seq[i] < v2.sval->seq[i]) {
+            return (Value){IntType, .ival = 1};
+          }
+          else if (v1.sval->seq[i] > v2.sval->seq[i]) {
+            return (Value){IntType, .ival = 0};
+          }
+        }
+          return (Value){IntType, .ival = 0};  
+     //   return (Value){IntType, .ival = 1};
+      }
+  //  return (Value){ IntType, .ival = v1.sval < v2.sval ? true : false };
     // Replace with code to compare sequences.
-    fprintf( stderr, "Sequence comparison not implemented\n" );
-    exit( 0 );
+//    fprintf( stderr, "Sequence comparison not implemented\n" );
+//    exit( 0 );
   }
 }
 
@@ -477,7 +523,25 @@ static Value evalEquals( Expr *expr, Environment *env )
     // Replace with code to permit sequence-sequence comparison.
     // A sequence can also be compared to an int, but they should
     // never be considered equal.
-    return (Value){SeqType, .ival = (v1.sval == v2.sval)};
+    if (v1.vtype == IntType) {
+    return (Value){IntType, .ival = 0};
+    }
+    else if (v2.vtype == IntType) {
+      return (Value){IntType, .ival = 0};
+    }
+    else {
+      if (v1.sval->len != v2.sval->len) {
+      return (Value){IntType, .ival = 0};
+      }
+      else {
+        for (int i = 0; i < v1.sval->len; i++) {
+          if (v1.sval->seq[i] != v2.sval->seq[i]) {
+            return (Value){IntType, .ival = 0};
+          }
+        }
+        return (Value){IntType, .ival = 1};
+      }
+    }
   }
 
   // Never reached.
@@ -572,6 +636,8 @@ static void executePush( Stmt *stmt, Environment *env ) {
   Value v1 = this->expr1->eval( this->expr1, env );
   Value v2 = this->expr2->eval( this->expr2, env );
 
+  requireIntType( &v2 );
+  requireSeqType( &v1 );
 
   if (v1.sval->len < v1.sval->cap) {
     v1.sval->seq[v1.sval->len] = v2.ival;
